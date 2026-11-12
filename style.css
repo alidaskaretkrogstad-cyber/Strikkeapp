@@ -1,0 +1,1078 @@
+/* =========================================================
+   FARGER OG GRUNNVERDIER
+   Alle farger samles her som "variabler", så de er lette å endre.
+   ========================================================= */
+:root {
+  --bakgrunn: #f6f2f9;     /* lys lavendelhvit */
+  --kort: #fdfbfe;         /* kortbakgrunn */
+  --tekst: #2f2638;        /* mørk plommefarget tekst */
+  --dempet: #7d7189;       /* grå-lilla for mindre viktig tekst */
+  --hoved: #6b4c8a;        /* dempet lilla hovedfarge */
+  --hoved-lys: #e7dcf1;    /* lys lavendel */
+  --aksent: #8b62b3;       /* klarere lilla for +1 */
+  --fare: #b04a5a;         /* dempet rød for slett */
+  --kant: #e3d9ec;
+  --radius: 16px;
+}
+
+/* Gjør størrelsesberegning enklere for alle elementer */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bakgrunn);
+  color: var(--tekst);
+  font-size: 18px;
+  line-height: 1.4;
+  /* Hindrer at dobbelttrykk zoomer inn når man trykker raskt på knapper */
+  touch-action: manipulation;
+}
+
+/* Elementer med "hidden" skal alltid være skjult */
+[hidden] {
+  display: none !important;
+}
+
+/* =========================================================
+   TOPPLINJE
+   ========================================================= */
+/* Topplinjen er delt i tre kolonner: [tilbake-knapp] [tittel] [tom].
+   Sidekolonnene er like brede, så tittelen alltid står midt på. */
+.topp {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 90px 1fr 90px;
+  align-items: center;
+  padding: 16px 12px;
+  padding-top: max(16px, env(safe-area-inset-top)); /* plass til "hakket" på iPhone */
+  background: var(--hoved);
+  color: #fff;
+}
+
+.topp h1 {
+  grid-column: 2; /* midterste kolonne */
+  margin: 0;
+  font-size: 1.4rem;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tilbake {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* =========================================================
+   FANER
+   ========================================================= */
+/* Fanemenyen ligger fast nederst på skjermen, lett å nå med tommelen */
+.faner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom)); /* plass til "hjem-streken" på iPhone */
+  background: var(--kort);
+  border-top: 1px solid var(--kant);
+  box-shadow: 0 -2px 10px rgba(47, 38, 56, 0.06);
+}
+
+/* Ekstra luft nederst på skjermer med meny, så innholdet ikke gjemmer seg bak den */
+.innhold.med-meny {
+  padding-bottom: 110px;
+}
+
+.fane {
+  flex: 1;
+  min-height: 52px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--dempet);
+  font-size: 0.9rem;
+  line-height: 1.15; /* lange ord som "In progress" kan bryte over to linjer */
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fane.aktiv {
+  background: var(--hoved-lys);
+  color: var(--hoved);
+}
+
+/* =========================================================
+   INNHOLD OG KORT
+   ========================================================= */
+.innhold {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+}
+
+.kort {
+  background: var(--kort);
+  border: 1px solid var(--kant);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  margin: 4px 0 6px;
+  font-weight: 600;
+  color: var(--dempet);
+  font-size: 0.95rem;
+}
+
+input,
+select {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--kant);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--tekst);
+  font-size: 1.1rem; /* minst 16px hindrer automatisk zoom på iPhone */
+}
+
+/* =========================================================
+   KNAPPER
+   ========================================================= */
+.knapp {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--hoved-lys);
+  color: var(--tekst);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.05s;
+}
+
+/* Liten "trykk"-effekt så man kjenner at knappen reagerer */
+.knapp:active {
+  transform: scale(0.97);
+}
+
+.knapp.hoved {
+  background: var(--hoved);
+  color: #fff;
+}
+
+.knapp.fare {
+  background: transparent;
+  color: var(--fare);
+  border: 2px solid var(--fare);
+}
+
+/* =========================================================
+   PROSJEKTLISTE
+   ========================================================= */
+.prosjektliste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.prosjekt-rad {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  min-height: 72px;
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--kant);
+  border-radius: var(--radius);
+  background: var(--kort);
+  color: var(--tekst);
+  font-size: 1.1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.prosjekt-navn {
+  flex: 1; /* navnet tar all ledig plass i midten */
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Lite bilde til venstre i prosjektlisten */
+.miniatyr {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--hoved-lys);
+}
+
+.miniatyr img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fyll ruten uten å strekke bildet */
+}
+
+.prosjekt-info {
+  flex-shrink: 0;
+  color: var(--dempet);
+  font-size: 0.9rem;
+}
+
+.tom-melding {
+  text-align: center;
+  color: var(--dempet);
+  padding: 24px 0;
+}
+
+/* =========================================================
+   TELLERE
+   ========================================================= */
+.teller {
+  text-align: center;
+}
+
+.teller h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--dempet);
+  font-weight: 600;
+}
+
+.tall {
+  display: block;
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 4px 0 12px;
+  font-variant-numeric: tabular-nums; /* tallene hopper ikke når de endres */
+}
+
+.teller-knapper {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* +1 er dobbelt så stor, den brukes mest */
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.teller-knapper .knapp {
+  min-height: 88px;
+  font-size: 2rem;
+}
+
+.knapp.pluss {
+  background: var(--aksent);
+  color: #fff;
+}
+
+.knapp.nullstill {
+  min-height: 44px;
+  background: transparent;
+  color: var(--dempet);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.handlinger {
+  display: grid;
+  gap: 10px;
+}
+
+/* =========================================================
+   FORSIDE
+   ========================================================= */
+.knapp.stor {
+  min-height: 64px;
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+}
+
+.seksjon-tittel {
+  margin: 24px 0 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dempet);
+}
+
+/* Tre ruter ved siden av hverandre med antall prosjekter */
+.oversikt {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.oversikt-rute {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 100px;
+  padding: 12px 6px;
+  border: 1px solid var(--kant);
+  border-radius: var(--radius);
+  background: var(--kort);
+  color: var(--dempet);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.antall {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--hoved);
+}
+
+/* =========================================================
+   BILDER OG SKJEMA
+   ========================================================= */
+.bilde-stort {
+  display: block;
+  width: 100%;
+  max-height: 340px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.bilde-knapper {
+  display: grid;
+  gap: 6px;
+}
+
+/* Overskrift i skjemaet som ikke hører til et vanlig felt */
+.felt-tittel {
+  display: block;
+  margin: 4px 0 6px;
+  font-weight: 600;
+  color: var(--dempet);
+  font-size: 0.95rem;
+}
+
+/* En <label> som ser ut og oppfører seg som en knapp (brukes for bildevalg) */
+label.knapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: var(--tekst);
+  font-size: 1.1rem;
+}
+
+/* Skjuler den kjedelige standard-filvelgeren, men lar den fortsatt virke */
+.skjult-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.lagre-knapp {
+  margin-top: 20px;
+}
+
+/* =========================================================
+   UNDERFANER PÅ PROJECTS (In progress / To knit / Finished)
+   ========================================================= */
+.underfaner {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 16px;
+  border-radius: 14px;
+  background: var(--hoved-lys);
+}
+
+.underfane {
+  flex: 1;
+  min-height: 48px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--dempet);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.15;
+  cursor: pointer;
+}
+
+/* Valgt underfane ser ut som en hvit "knapp" som ligger oppå */
+.underfane.aktiv {
+  background: var(--kort);
+  color: var(--hoved);
+  box-shadow: 0 1px 4px rgba(47, 38, 56, 0.12);
+}
+
+/* =========================================================
+   DETALJSIDE / OPPSKRIFT
+   ========================================================= */
+.kort-tittel {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+}
+
+.status-linje {
+  margin: 0 0 12px;
+  color: var(--dempet);
+}
+
+.status-merke {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--hoved-lys);
+  color: var(--hoved);
+  font-weight: 600;
+}
+
+/* Liste med knapper under hverandre */
+.knapp-liste {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Lenker (<a>) som ser ut som knapper */
+.lenke-knapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+/* Liste med informasjon: overskrift til venstre, verdi til høyre */
+.detaljer-liste {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin: 0 0 16px;
+}
+
+.detaljer-liste dt {
+  color: var(--dempet);
+  font-weight: 600;
+}
+
+.detaljer-liste dd {
+  margin: 0;
+  white-space: pre-wrap; /* behold linjeskift i notater */
+  overflow-wrap: anywhere;
+}
+
+/* Liten forklarende tekst */
+.hint {
+  margin: 8px 0 12px;
+  color: var(--dempet);
+  font-size: 0.95rem;
+}
+
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--kant);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--tekst);
+  font: inherit;
+  font-size: 1.1rem;
+  resize: vertical;
+}
+
+/* =========================================================
+   NYTT PROSJEKT FRA TO KNIT, FILNAVN, SMÅ KNAPPER
+   ========================================================= */
+.liste-ny-knapp {
+  margin-bottom: 16px;
+}
+
+/* Navnet på oppskriftsfilen man har valgt */
+.valgt-fil {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--hoved-lys);
+  overflow-wrap: anywhere;
+}
+
+/* Mindre knapp, f.eks. "+ Add needle" */
+.knapp.liten-knapp {
+  min-height: 48px;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+/* =========================================================
+   GARN OG PINNER: én rad per garn/pinne  [felt] [felt] [×]
+   ========================================================= */
+.liste-rad {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.liste-rad input {
+  flex: 1;
+  min-width: 0; /* lar feltene krympe på smale skjermer */
+  margin-bottom: 0;
+}
+
+/* Lite ×-kryss for å fjerne en pinne eller en småteller */
+.fjern-rad {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--dempet);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* =========================================================
+   SMÅTELLERE (under hovedtelleren, to i bredden)
+   ========================================================= */
+.ekstra-tellere {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.liten-teller {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 1px solid var(--kant);
+  border-radius: var(--radius);
+  background: var(--kort);
+  text-align: center;
+}
+
+.liten-teller-topp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.liten-teller-topp .fjern-rad {
+  width: 36px;
+  height: 36px;
+  font-size: 1.3rem;
+}
+
+.liten-teller-navn {
+  flex: 1;
+  padding-left: 4px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--dempet);
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.liten-teller-tall {
+  display: block;
+  margin: 2px 0 8px;
+  font-size: 2.2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.liten-teller-knapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.liten-teller-knapper .knapp {
+  min-height: 52px;
+  font-size: 1.6rem;
+}
+
+/* "+ Add counter" med stiplet kant, så den skiller seg fra tellerne */
+.knapp.ny-teller {
+  margin-bottom: 16px;
+  border: 2px dashed var(--kant);
+  background: transparent;
+  color: var(--hoved);
+}
+
+/* =========================================================
+   VALGKNAPPER (vanskelighetsgrad: Easy / Medium / Hard)
+   ========================================================= */
+.valg-gruppe {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  background: var(--hoved-lys);
+}
+
+.valg-gruppe button {
+  flex: 1;
+  min-height: 48px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--dempet);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.valg-gruppe button.aktiv {
+  background: var(--hoved);
+  color: #fff;
+}
+
+/* =========================================================
+   PAUSE
+   ========================================================= */
+/* Prosjekter på pause: grå-lilla bakgrunn og dempet tekst */
+.prosjekt-rad.pauset {
+  background: #ece8ef;
+  border-style: dashed;
+  color: var(--dempet);
+}
+
+.prosjekt-rad.pauset .miniatyr {
+  opacity: 0.6;
+}
+
+/* Meldingen øverst på tellersiden når prosjektet er på pause */
+.pause-melding {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: #ece8ef;
+  color: var(--dempet);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* =========================================================
+   FERDIG-SIDEN
+   ========================================================= */
+.ferdig-navn {
+  margin: 0 0 12px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--hoved);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   PROSJEKTRAD + "RESUME"-KNAPP VED SIDEN AV
+   ========================================================= */
+.prosjekt-element {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  border-radius: var(--radius);
+}
+
+.gjenoppta-knapp {
+  flex-shrink: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--aksent);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Kort lilla glød på raden som nettopp hoppet opp */
+.hoppet-opp {
+  animation: glod 1.2s ease-out;
+}
+
+@keyframes glod {
+  from { box-shadow: 0 0 0 4px var(--aksent); }
+  to   { box-shadow: 0 0 0 4px transparent; }
+}
+
+/* =========================================================
+   TO KNAPPER VED SIDEN AV HVERANDRE (Pattern | Details, dialog)
+   ========================================================= */
+.to-knapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* =========================================================
+   BLYANT OG NAVNEFELT (endre navn på tellere)
+   ========================================================= */
+.blyant {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+/* Hovedtellerens navn med blyanten ved siden av, midtstilt */
+.teller-navn-rad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.navn-felt {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 10px;
+  font-size: 1rem;
+}
+
+.teller-navn-rad .navn-felt {
+  max-width: 220px;
+  text-align: center;
+}
+
+/* =========================================================
+   DIALOGBOKS
+   ========================================================= */
+.dialog {
+  width: min(400px, calc(100% - 32px));
+  padding: 20px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--kort);
+  color: var(--tekst);
+  box-shadow: 0 10px 40px rgba(47, 38, 56, 0.25);
+}
+
+/* Mørk bakgrunn bak dialogboksen */
+.dialog::backdrop {
+  background: rgba(47, 38, 56, 0.45);
+}
+
+.dialog-tekst {
+  margin: 0 0 20px;
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+/* Når Cancel er skjult, fyller OK hele bredden */
+.dialog .to-knapper:has(> [hidden]) {
+  grid-template-columns: 1fr;
+}
+
+/* =========================================================
+   FILTER PÅ IN PROGRESS (All / Active / Paused)
+   ========================================================= */
+.filter-gruppe {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.filter-gruppe button {
+  flex: 1;
+  min-height: 40px;
+  border: 1px solid var(--kant);
+  border-radius: 999px;
+  background: var(--kort);
+  color: var(--dempet);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter-gruppe button.aktiv {
+  border-color: var(--hoved);
+  background: var(--hoved);
+  color: #fff;
+}
+
+/* Skillelinje "Paused projects":  ——— Paused projects ——— */
+.skillelinje {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 12px;
+  color: var(--dempet);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.skillelinje::before,
+.skillelinje::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--kant);
+}
+
+/* =========================================================
+   OPPSKRIFT-SIDEN
+   ========================================================= */
+/* Oppskriftsbildet vises helt (ikke beskåret), så hele mønsteret synes */
+.monster-bilde {
+  max-height: none;
+  object-fit: contain;
+}
+
+/* =========================================================
+   TOPPLINJE: pil tilbake (venstre) og hus (høyre)
+   (Disse reglene overstyrer de tidligere reglene for .topp og .tilbake.)
+   ========================================================= */
+.topp {
+  grid-template-columns: 52px 1fr 52px;
+}
+
+.tilbake,
+.hjem-knapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Lys sirkel bak ikonet når man trykker */
+.tilbake:active,
+.hjem-knapp:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.hjem-knapp {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+}
+
+/* =========================================================
+   MINDRE "RESUME"-KNAPP
+   ========================================================= */
+.gjenoppta-knapp {
+  align-self: center;
+  min-height: 40px;
+  padding: 0 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+
+/* =========================================================
+   TELLERSIDEN
+   ========================================================= */
+.monster-topp {
+  margin-bottom: 16px;
+}
+
+.liten-hint {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* De små tellerne ligger bortover. Er det for mange til skjermen,
+   kan man scrolle sidelengs (scrollbar nederst). */
+.ekstra-tellere {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  margin: 0 -16px 16px;   /* går helt ut til kanten av skjermen ... */
+  padding: 2px 16px 10px; /* ... men innholdet starter på linje med resten */
+  scrollbar-width: thin;
+  scrollbar-color: var(--hoved-lys) transparent;
+}
+
+.ekstra-tellere::-webkit-scrollbar {
+  height: 6px;
+}
+
+.ekstra-tellere::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: var(--hoved-lys);
+}
+
+/* Litt mindre bokser enn før, siden de nå ligger bortover */
+.liten-teller {
+  flex: 0 0 148px;
+  padding: 8px;
+  scroll-snap-align: start;
+  cursor: pointer; /* man kan trykke på boksen for å gjøre den stor */
+}
+
+.liten-teller-tall {
+  margin: 0 0 6px;
+  font-size: 1.8rem;
+}
+
+.liten-teller-knapper .knapp {
+  min-height: 44px;
+  font-size: 1.4rem;
+}
+
+.liten-teller-topp .blyant,
+.liten-teller-topp .fjern-rad {
+  width: 30px;
+  height: 30px;
+  font-size: 0.9rem;
+}
+
+.liten-teller-topp .fjern-rad {
+  font-size: 1.2rem;
+}
+
+/* "+ Add counter"-boksen til slutt i raden */
+.ny-teller-flis {
+  flex: 0 0 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 140px;
+  border: 2px dashed var(--kant);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--hoved);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.pluss-tegn {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+/* =========================================================
+   KNITTING / CROCHET (øverst i skjemaet)
+   ========================================================= */
+.valg-gruppe.teknikk-valg {
+  margin-bottom: 16px;
+}
+
+.teknikk-valg button {
+  min-height: 52px;
+  font-size: 1.05rem;
+}
+
+/* =========================================================
+   HVA LAGER DU? (Sweater, Hat, ... Other) – knapper som brytes over flere linjer
+   ========================================================= */
+.valg-gruppe.chips {
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  background: transparent;
+}
+
+.valg-gruppe.chips button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--kant);
+  border-radius: 999px;
+  background: var(--kort);
+  font-size: 0.95rem;
+}
+
+.valg-gruppe.chips button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Det lille ikonet foran teksten (🧦, 🧣, ...) */
+.chip-ikon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.valg-gruppe.chips button.aktiv {
+  border-color: var(--hoved);
+}
+
+/* =========================================================
+   STJERNER (hvor godt likte du å strikke det?)
+   ========================================================= */
+.stjerner {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.stjerner button {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--kant); /* tom stjerne */
+  font-size: 2.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.stjerner button.aktiv {
+  color: var(--aksent); /* fylt stjerne */
+}
+
+/* Stjernene i Finished-listen */
+.stjerne-info {
+  color: var(--aksent);
+  letter-spacing: 1px;
+}

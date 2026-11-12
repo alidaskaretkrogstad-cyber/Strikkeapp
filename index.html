@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <!-- Sørger for at appen tilpasses mobilskjermen (ingen "zoomet ut"-visning) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- Fargen på nettleserens adresselinje / statuslinje på mobil -->
+  <meta name="theme-color" content="#6b4c8a">
+
+  <!-- Gjør at appen ser ut som en ekte app når den legges til på hjemskjermen på iPhone -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Strikkeapp">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <meta name="description" content="Keep track of your knitting projects, with row and stitch counters.">
+  <title>Strikkeapp</title>
+
+  <!-- PWA-manifestet: forteller telefonen navn, ikon og farger for appen -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Appen består av seks "skjermer" (section). Bare én vises om gangen;
+       app.js skjuler/viser dem med "hidden". -->
+
+  <!-- ===================== FORSIDE ===================== -->
+  <section id="hjem-skjerm" class="skjerm">
+    <header class="topp">
+      <h1>Strikkeapp</h1>
+    </header>
+
+    <main class="innhold med-meny">
+      <button id="ny-knapp" class="knapp hoved stor">+ New project</button>
+
+      <!-- Vises bare hvis du har et prosjekt som pågår (og ikke er satt på pause) -->
+      <div id="fortsett-boks" hidden>
+        <h2 class="seksjon-tittel">Last knitted</h2>
+        <ul id="fortsett-liste" class="prosjektliste"></ul>
+      </div>
+
+      <h2 class="seksjon-tittel">Your projects</h2>
+      <!-- Tre ruter med antall prosjekter. Trykk for å gå til riktig underfane. -->
+      <div class="oversikt">
+        <button class="oversikt-rute" data-status="pagar">
+          <span class="antall" id="antall-pagar">0</span>
+          <span>In progress</span>
+        </button>
+        <button class="oversikt-rute" data-status="vil">
+          <span class="antall" id="antall-vil">0</span>
+          <span>To knit</span>
+        </button>
+        <button class="oversikt-rute" data-status="ferdig">
+          <span class="antall" id="antall-ferdig">0</span>
+          <span>Finished</span>
+        </button>
+      </div>
+
+      <!-- De to prosjektene du strikket på før det siste. Vises bare hvis de finnes. -->
+      <div id="nylig-boks" hidden>
+        <h2 class="seksjon-tittel">Recently knitted</h2>
+        <ul id="nylig-liste" class="prosjektliste"></ul>
+      </div>
+    </main>
+  </section>
+
+  <!-- ===================== PROJECTS (med underfaner) ===================== -->
+  <section id="prosjekter-skjerm" class="skjerm" hidden>
+    <header class="topp">
+      <h1>Projects</h1>
+      <button class="hjem-knapp" aria-label="Home"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9v11h5v-6h4v6h5V9"/></svg></button>
+    </header>
+
+    <main class="innhold med-meny">
+      <!-- Underfaner: velg hvilken status du vil se -->
+      <div class="underfaner" role="tablist">
+        <button class="underfane" data-status="pagar">In progress</button>
+        <button class="underfane" data-status="vil">To knit</button>
+        <button class="underfane" data-status="ferdig">Finished</button>
+      </div>
+
+      <!-- Filter for aktive/pausede prosjekter. Vises bare på "In progress"-fanen. -->
+      <div id="pause-filter" class="filter-gruppe" hidden>
+        <button data-filter="alle">All</button>
+        <button data-filter="aktive">Active</button>
+        <button data-filter="pause">Paused</button>
+      </div>
+
+      <!-- Vises bare på "To knit"-fanen -->
+      <button id="ny-to-knit-knapp" class="knapp hoved liste-ny-knapp" hidden>+ New project</button>
+
+      <!-- Her fyller app.js inn prosjektene -->
+      <ul id="prosjektliste" class="prosjektliste"></ul>
+      <p id="tom-melding" class="tom-melding" hidden>No projects here yet.</p>
+    </main>
+  </section>
+
+  <!-- ===================== NYTT PROSJEKT ===================== -->
+  <section id="nytt-skjerm" class="skjerm" hidden>
+    <header class="topp">
+      <button class="tilbake" aria-label="Back"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <h1>New project</h1>
+      <button class="hjem-knapp" aria-label="Home"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9v11h5v-6h4v6h5V9"/></svg></button>
+    </header>
+
+    <main class="innhold">
+      <form id="nytt-prosjekt-skjema">
+        <!-- Strikking eller hekling. data-paakrevd = man kan ikke velge bort begge. -->
+        <div id="ny-teknikk" class="valg-gruppe teknikk-valg" data-paakrevd>
+          <button type="button" data-verdi="strikking">Knitting</button>
+          <button type="button" data-verdi="hekling">Crochet</button>
+        </div>
+
+        <div class="kort">
+          <label for="nytt-navn">Name</label>
+          <input id="nytt-navn" type="text" placeholder="E.g. Winter sweater" required maxlength="80" autocomplete="off">
+
+          <!-- Hva lager du? app.js fyller inn knappene (Sweater, Hat, ...) -->
+          <span class="felt-tittel">What are you making?</span>
+          <div id="ny-type" class="valg-gruppe chips"></div>
+          <input id="ny-type-annet" type="text" maxlength="60" autocomplete="off" placeholder="What are you making?" hidden>
+
+          <label for="ny-status">Status</label>
+          <select id="ny-status">
+            <option value="vil" selected>To knit</option>
+            <option value="pagar">In progress</option>
+            <option value="ferdig">Finished</option>
+          </select>
+
+          <!-- Vanskelighetsgrad: trykk på én av knappene (trykk igjen for å fjerne) -->
+          <span class="felt-tittel">Difficulty</span>
+          <div id="ny-vanskelighet" class="valg-gruppe">
+            <button type="button" data-verdi="lett">Easy</button>
+            <button type="button" data-verdi="middels">Medium</button>
+            <button type="button" data-verdi="vanskelig">Hard</button>
+          </div>
+        </div>
+
+        <!-- Oppskrift -->
+        <div class="kort">
+          <h2 class="kort-tittel">Pattern</h2>
+          <p id="nytt-oppskrift-navn" class="valgt-fil" hidden></p>
+          <!-- Selve filvelgeren er usynlig; man trykker på knappen (label) i stedet -->
+          <input id="nytt-oppskrift" class="skjult-input" type="file" accept="application/pdf,image/*">
+          <label for="nytt-oppskrift" class="knapp">📎 Add pattern (PDF or image)</label>
+        </div>
+
+        <!-- Utstyr. app.js fyller inn én rad per garn / pinne. -->
+        <div class="kort">
+          <h2 class="kort-tittel">Equipment</h2>
+
+          <span class="felt-tittel">Yarn</span>
+          <div id="nytt-garn" class="rad-liste" data-felt="garn"></div>
+          <button type="button" class="knapp liten-knapp" data-ny-rad="nytt-garn">+ Add yarn</button>
+
+          <!-- data-tekst-hekl: teksten som vises når "Crochet" er valgt -->
+          <span class="felt-tittel" data-tekst-strikk="Needles" data-tekst-hekl="Hooks">Needles</span>
+          <div id="nytt-pinner" class="rad-liste" data-felt="pinner"></div>
+          <button type="button" class="knapp liten-knapp" data-ny-rad="nytt-pinner" data-tekst-strikk="+ Add needle" data-tekst-hekl="+ Add hook">+ Add needle</button>
+        </div>
+
+        <!-- Bilde -->
+        <div class="kort">
+          <h2 class="kort-tittel">Photo</h2>
+          <img id="nytt-bilde-forhand" class="bilde-stort" alt="Selected photo" hidden>
+          <input id="nytt-bilde" class="skjult-input" type="file" accept="image/*">
+          <label for="nytt-bilde" class="knapp">📷 Add photo</label>
+        </div>
+
+        <button type="submit" class="knapp hoved stor">Create project</button>
+      </form>
+    </main>
+  </section>
+
+  <!-- ===================== TELLERE (for et prosjekt som pågår) ===================== -->
+  <section id="teller-skjerm" class="skjerm" hidden>
+    <header class="topp">
+      <button class="tilbake" aria-label="Back"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <h1 id="teller-tittel">Project</h1>
+      <button class="hjem-knapp" aria-label="Home"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9v11h5v-6h4v6h5V9"/></svg></button>
+    </header>
+
+    <main class="innhold">
+      <!-- Oppskriften øverst, så den er lett å nå mens man strikker -->
+      <button id="monster-knapp" class="knapp monster-topp">📄 Pattern</button>
+
+      <!-- Vises når prosjektet er satt på pause -->
+      <p id="pause-melding" class="pause-melding" hidden>⏸ This project is paused</p>
+
+      <!-- Den store telleren. Hvilken teller som vises her, velger man selv
+           ved å trykke på en av de små tellerne under. -->
+      <div id="hoved-teller" class="kort teller">
+        <!-- Navnet + blyant for å endre navnet -->
+        <div class="teller-navn-rad">
+          <h2 id="hoved-navn">Rows</h2>
+          <button id="hoved-blyant" class="blyant" aria-label="Rename counter">✏️</button>
+        </div>
+        <output class="tall" id="hoved-tall">0</output>
+        <div class="teller-knapper">
+          <button class="knapp minus" id="hoved-minus" aria-label="Minus one">−1</button>
+          <button class="knapp pluss" id="hoved-pluss" aria-label="Plus one">+1</button>
+        </div>
+        <div class="to-knapper">
+          <button class="knapp nullstill" id="hoved-nullstill">Reset</button>
+          <button class="knapp nullstill" id="hoved-fjern">Remove</button>
+        </div>
+      </div>
+
+      <!-- De små tellerne ligger bortover, og man kan scrolle sidelengs.
+           app.js fyller inn boksene, pluss en "+ Add counter"-boks til slutt. -->
+      <p id="bytt-hint" class="hint liten-hint" hidden>Tap a counter to make it big</p>
+      <div id="ekstra-tellere" class="ekstra-tellere"></div>
+
+      <div class="kort handlinger">
+        <button id="til-detaljer-knapp" class="knapp">ℹ️ Details</button>
+        <button id="pause-knapp" class="knapp">⏸ Pause project</button>
+        <button id="ferdig-knapp" class="knapp hoved">✓ Mark as finished</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- ===================== FERDIG! (vurdering når prosjektet er ferdig) ===================== -->
+  <section id="ferdig-skjerm" class="skjerm" hidden>
+    <header class="topp">
+      <button class="tilbake" aria-label="Back"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <h1 id="ferdig-tittel">Finished! 🎉</h1>
+      <button class="hjem-knapp" aria-label="Home"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9v11h5v-6h4v6h5V9"/></svg></button>
+    </header>
+
+    <main class="innhold">
+      <form id="ferdig-skjema">
+        <div class="kort">
+          <p id="ferdig-prosjektnavn" class="ferdig-navn"></p>
+
+          <label for="ferdig-resultat">How did it turn out?</label>
+          <textarea id="ferdig-resultat" rows="4" maxlength="5000" placeholder="E.g. Fits perfectly, love the colours"></textarea>
+
+          <label for="ferdig-prosess">How did it go?</label>
+          <textarea id="ferdig-prosess" rows="4" maxlength="5000" placeholder="E.g. Had to redo the sleeves once"></textarea>
+
+          <span class="felt-tittel">How difficult was it?</span>
+          <div id="ferdig-vanskelighet" class="valg-gruppe">
+            <button type="button" data-verdi="lett">Easy</button>
+            <button type="button" data-verdi="middels">Medium</button>
+            <button type="button" data-verdi="vanskelig">Hard</button>
+          </div>
+
+          <!-- Stjerner: trykk på stjerne 4 = 4 av 5 -->
+          <span id="ferdig-likte-tittel" class="felt-tittel">How did you like knitting it?</span>
+          <div id="ferdig-likte" class="stjerner">
+            <button type="button" data-verdi="1" aria-label="1 of 5">★</button>
+            <button type="button" data-verdi="2" aria-label="2 of 5">★</button>
+            <button type="button" data-verdi="3" aria-label="3 of 5">★</button>
+            <button type="button" data-verdi="4" aria-label="4 of 5">★</button>
+            <button type="button" data-verdi="5" aria-label="5 of 5">★</button>
+          </div>
+        </div>
+
+        <div class="kort">
+          <h2 class="kort-tittel">Photo of the finished project</h2>
+          <img id="ferdig-bilde-forhand" class="bilde-stort" alt="Selected photo" hidden>
+          <input id="ferdig-bilde" class="skjult-input" type="file" accept="image/*">
+          <label for="ferdig-bilde" class="knapp">📷 Add photo</label>
+        </div>
+
+        <button type="submit" id="ferdig-lagre" class="knapp hoved stor">✓ Save as finished</button>
+      </form>
+    </main>
+  </section>
+
+  <!-- ===================== DETALJER / OPPSKRIFT (for et prosjekt) ===================== -->
+  <section id="detaljer-skjerm" class="skjerm" hidden>
+    <header class="topp">
+      <button class="tilbake" aria-label="Back"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <h1 id="detaljer-tittel">Project</h1>
+      <button class="hjem-knapp" aria-label="Home"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9v11h5v-6h4v6h5V9"/></svg></button>
+    </header>
+
+    <main class="innhold">
+      <!-- Bilde og status -->
+      <div class="kort">
+        <img id="detaljer-bilde" class="bilde-stort" alt="Photo of the project" hidden>
+        <p class="status-linje">Status: <span id="detaljer-status" class="status-merke"></span></p>
+      </div>
+
+      <!-- Vurderingen fra ferdig-siden (bare for ferdige prosjekter) -->
+      <div id="vurdering-kort" class="kort" hidden>
+        <h2 class="kort-tittel">Your review</h2>
+        <dl id="vurdering-liste" class="detaljer-liste"></dl>
+        <button id="rediger-vurdering-knapp" class="knapp">✏️ Edit review</button>
+      </div>
+
+      <!-- Til oppskriften (den har sin egen side) -->
+      <div class="kort">
+        <button id="detaljer-monster-knapp" class="knapp">📄 Pattern</button>
+      </div>
+
+      <!-- Informasjon om prosjektet (visning) -->
+      <div id="info-kort" class="kort">
+        <h2 class="kort-tittel">Details</h2>
+        <dl id="detaljer-liste" class="detaljer-liste"></dl>
+        <p id="ingen-detaljer" class="hint">No details added yet.</p>
+        <button id="rediger-knapp" class="knapp">✏️ Edit details</button>
+      </div>
+
+      <!-- Informasjon om prosjektet (redigering) – skjult til man trykker "Edit details" -->
+      <form id="rediger-skjema" class="kort" hidden>
+        <h2 class="kort-tittel">Edit details</h2>
+
+        <span class="felt-tittel">Knitting or crochet</span>
+        <div id="rediger-teknikk" class="valg-gruppe teknikk-valg" data-paakrevd>
+          <button type="button" data-verdi="strikking">Knitting</button>
+          <button type="button" data-verdi="hekling">Crochet</button>
+        </div>
+
+        <label for="rediger-navn">Name</label>
+        <input id="rediger-navn" type="text" required maxlength="80" autocomplete="off">
+
+        <span class="felt-tittel">What are you making?</span>
+        <div id="rediger-type" class="valg-gruppe chips"></div>
+        <input id="rediger-type-annet" type="text" maxlength="60" autocomplete="off" placeholder="What are you making?" hidden>
+
+        <label for="rediger-designer">Designer</label>
+        <input id="rediger-designer" type="text" maxlength="80" autocomplete="off">
+
+        <span class="felt-tittel">Difficulty</span>
+        <div id="rediger-vanskelighet" class="valg-gruppe">
+          <button type="button" data-verdi="lett">Easy</button>
+          <button type="button" data-verdi="middels">Medium</button>
+          <button type="button" data-verdi="vanskelig">Hard</button>
+        </div>
+
+        <span class="felt-tittel">Yarn</span>
+        <div id="rediger-garn" class="rad-liste" data-felt="garn"></div>
+        <button type="button" class="knapp liten-knapp" data-ny-rad="rediger-garn">+ Add yarn</button>
+
+        <span class="felt-tittel" data-tekst-strikk="Needles" data-tekst-hekl="Hooks">Needles</span>
+        <div id="rediger-pinner" class="rad-liste" data-felt="pinner"></div>
+        <button type="button" class="knapp liten-knapp" data-ny-rad="rediger-pinner" data-tekst-strikk="+ Add needle" data-tekst-hekl="+ Add hook">+ Add needle</button>
+
+        <label for="rediger-storrelse">Size</label>
+        <input id="rediger-storrelse" type="text" maxlength="80" autocomplete="off">
+
+        <label for="rediger-lenke">Pattern link</label>
+        <input id="rediger-lenke" type="text" inputmode="url" maxlength="500" autocomplete="off" placeholder="https://...">
+
+        <label for="rediger-notater">Notes</label>
+        <textarea id="rediger-notater" rows="5" maxlength="5000"></textarea>
+
+        <div class="knapp-liste">
+          <button type="submit" class="knapp hoved">Save</button>
+          <button type="button" id="avbryt-rediger-knapp" class="knapp nullstill">Cancel</button>
+        </div>
+      </form>
+
+      <!-- Bilde av prosjektet -->
+      <div class="kort">
+        <h2 class="kort-tittel">Photo</h2>
+        <div class="knapp-liste">
+          <input id="bilde-input" class="skjult-input" type="file" accept="image/*">
+          <label for="bilde-input" id="bilde-knapp" class="knapp">📷 Add photo</label>
+          <button id="fjern-bilde-knapp" class="knapp nullstill" hidden>Remove photo</button>
+        </div>
+      </div>
+
+      <!-- Hovedknappen: "Start project" (To knit) eller "Open counters" (In progress).
+           Skjult for ferdige prosjekter. -->
+      <div id="handling-kort" class="kort">
+        <button id="hoved-handling" class="knapp hoved stor">▶ Start project</button>
+      </div>
+
+      <div class="kort">
+        <button id="slett-knapp" class="knapp fare">🗑️ Delete project</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- ===================== OPPSKRIFT (for et prosjekt) ===================== -->
+  <section id="monster-skjerm" class="skjerm" hidden>
+    <header class="topp">
+      <button class="tilbake" aria-label="Back"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <h1>Pattern</h1>
+      <button class="hjem-knapp" aria-label="Home"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9v11h5v-6h4v6h5V9"/></svg></button>
+    </header>
+
+    <main class="innhold">
+      <div class="kort">
+        <p id="monster-prosjektnavn" class="ferdig-navn"></p>
+
+        <!-- Er oppskriften et bilde, vises den her -->
+        <img id="oppskrift-bilde" class="bilde-stort monster-bilde" alt="Pattern" hidden>
+        <div class="knapp-liste">
+          <a id="oppskrift-fil-lenke" class="knapp hoved lenke-knapp" target="_blank" rel="noopener" hidden>📄 Open pattern</a>
+          <a id="oppskrift-nett-lenke" class="knapp lenke-knapp" target="_blank" rel="noopener" hidden>🔗 Open pattern link</a>
+        </div>
+        <p id="ingen-oppskrift" class="hint">No pattern added yet. Add a PDF or a photo of the pattern below, or add a link under Details.</p>
+      </div>
+
+      <div class="kort">
+        <input id="oppskrift-input" class="skjult-input" type="file" accept="application/pdf,image/*">
+        <div class="knapp-liste">
+          <label for="oppskrift-input" id="oppskrift-knapp" class="knapp">📎 Add pattern (PDF or image)</label>
+          <button id="fjern-oppskrift-knapp" class="knapp nullstill" hidden>Remove pattern file</button>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ===================== MENY NEDERST ===================== -->
+  <!-- Vises på forsiden og på Projects, men ikke inne i et prosjekt. -->
+  <nav id="meny" class="faner" aria-label="Menu">
+    <button class="fane aktiv" data-mal="hjem">Home</button>
+    <button class="fane" data-mal="prosjekter">Projects</button>
+  </nav>
+
+  <!-- ===================== DIALOGBOKS ===================== -->
+  <!-- Appens egen spørreboks (brukes i stedet for nettleserens confirm/alert,
+       som ikke virker i alle nettlesere, f.eks. forhåndsvisningen i VS Code). -->
+  <dialog id="dialog" class="dialog">
+    <form method="dialog">
+      <p id="dialog-tekst" class="dialog-tekst"></p>
+      <div class="to-knapper">
+        <button id="dialog-nei" value="nei" class="knapp">Cancel</button>
+        <button id="dialog-ja" value="ja" class="knapp hoved">OK</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
