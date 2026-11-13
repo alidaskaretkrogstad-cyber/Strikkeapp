@@ -6,7 +6,7 @@
 
 // VIKTIG: Øk versjonsnummeret hver gang du endrer en fil og legger ut
 // appen på nytt. Da henter telefonen de nye filene.
-const CACHE_NAVN = 'strikkeapp-v12';
+const CACHE_NAVN = 'strikkeapp-v13';
 
 // Filene appen trenger for å fungere offline
 const FILER = [

@@ -45,13 +45,13 @@
       <h2 class="seksjon-tittel">Your projects</h2>
       <!-- Tre ruter med antall prosjekter. Trykk for å gå til riktig underfane. -->
       <div class="oversikt">
-        <button class="oversikt-rute" data-status="pagar">
-          <span class="antall" id="antall-pagar">0</span>
-          <span>In progress</span>
-        </button>
         <button class="oversikt-rute" data-status="vil">
           <span class="antall" id="antall-vil">0</span>
           <span>To knit</span>
+        </button>
+        <button class="oversikt-rute" data-status="pagar">
+          <span class="antall" id="antall-pagar">0</span>
+          <span>In progress</span>
         </button>
         <button class="oversikt-rute" data-status="ferdig">
           <span class="antall" id="antall-ferdig">0</span>
@@ -77,8 +77,8 @@
     <main class="innhold med-meny">
       <!-- Underfaner: velg hvilken status du vil se -->
       <div class="underfaner" role="tablist">
-        <button class="underfane" data-status="pagar">In progress</button>
         <button class="underfane" data-status="vil">To knit</button>
+        <button class="underfane" data-status="pagar">In progress</button>
         <button class="underfane" data-status="ferdig">Finished</button>
       </div>
 
