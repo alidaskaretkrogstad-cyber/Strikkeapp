@@ -1076,3 +1076,367 @@ textarea {
   color: var(--aksent);
   letter-spacing: 1px;
 }
+
+/* =========================================================
+   NYTT UTSEENDE
+   Lunere, lysere stil: lys linfarget bakgrunn, myke skygger i stedet
+   for kanter, serif-skrift i overskriftene og en svevende meny.
+   (Reglene her overstyrer reglene lenger opp i filen.)
+   ========================================================= */
+:root {
+  --bakgrunn: #f7f3ef;     /* varm, lys linfarge */
+  --kort: #fffdfb;
+  --tekst: #2e2433;
+  --dempet: #857a8c;
+  --hoved: #5e3f7d;        /* dyp plomme */
+  --hoved-lys: #efe7f4;
+  --aksent: #8a5fb0;
+  --fare: #b04a5a;
+  --kant: #ebe3e8;
+  --felt: #f6f1f3;         /* bakgrunn i tekstfelt */
+  --radius: 20px;
+  --skygge: 0 1px 2px rgba(60, 40, 70, 0.04), 0 6px 20px rgba(60, 40, 70, 0.07);
+  --skygge-hoved: 0 6px 18px rgba(94, 63, 125, 0.28);
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Topplinje: lys og luftig i stedet for lilla blokk ---------- */
+.topp {
+  padding: 12px 12px;
+  padding-top: max(12px, env(safe-area-inset-top));
+  background: rgba(247, 243, 239, 0.86);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: var(--hoved);
+}
+
+.topp h1 {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--tekst);
+}
+
+/* Forsidens tittel litt større */
+#hjem-skjerm .topp h1 {
+  font-size: 1.9rem;
+  color: var(--hoved);
+}
+
+.tilbake,
+.hjem-knapp {
+  background: var(--kort);
+  color: var(--hoved);
+  box-shadow: var(--skygge);
+}
+
+.tilbake:active,
+.hjem-knapp:active {
+  background: var(--hoved-lys);
+}
+
+/* ---------- Kort ---------- */
+.kort {
+  border: 0;
+  box-shadow: var(--skygge);
+  padding: 18px;
+}
+
+.kort-tittel {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--tekst);
+}
+
+/* Små overskrifter: STORE BOKSTAVER med luft mellom */
+.seksjon-tittel {
+  margin: 28px 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dempet);
+}
+
+/* ---------- Knapper ---------- */
+.knapp {
+  background: var(--hoved-lys);
+  color: var(--hoved);
+  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.knapp.hoved {
+  background: linear-gradient(135deg, #6f4c93, #553873);
+  color: #fff;
+  box-shadow: var(--skygge-hoved);
+}
+
+.knapp.pluss {
+  background: linear-gradient(135deg, #9a6fc0, #7c52a3);
+  box-shadow: 0 6px 16px rgba(138, 95, 176, 0.3);
+}
+
+.knapp.fare {
+  border-width: 1.5px;
+  box-shadow: none;
+}
+
+.knapp.nullstill {
+  background: transparent;
+  box-shadow: none;
+}
+
+label.knapp {
+  color: var(--hoved);
+}
+
+/* ---------- Tekstfelt ---------- */
+input,
+select,
+textarea {
+  border: 1.5px solid transparent;
+  background: var(--felt);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--aksent);
+  background: #fff;
+}
+
+label,
+.felt-tittel {
+  font-size: 0.88rem;
+  color: var(--dempet);
+}
+
+/* ---------- Prosjektliste ---------- */
+.prosjekt-rad {
+  border: 0;
+  box-shadow: var(--skygge);
+  padding: 12px 16px 12px 12px;
+}
+
+.prosjekt-navn {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+}
+
+.miniatyr {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  /* Når prosjektet ikke har bilde, vises et lite ikon midt i ruten */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f3ebf7, #e8dcef);
+  font-size: 1.6rem;
+}
+
+.prosjekt-info {
+  font-size: 0.85rem;
+}
+
+.prosjekt-rad.pauset {
+  background: #f1edf0;
+  border: 0;
+  box-shadow: none;
+  outline: 1.5px dashed var(--kant);
+  outline-offset: -1.5px;
+}
+
+.gjenoppta-knapp {
+  background: var(--hoved-lys);
+  color: var(--hoved);
+}
+
+/* ---------- Forsiden: tre fargede ruter ---------- */
+.oversikt-rute {
+  border: 0;
+  box-shadow: var(--skygge);
+  min-height: 108px;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.oversikt-rute[data-status="vil"] {
+  background: #fbefe7;
+  color: #a2643f;
+}
+
+.oversikt-rute[data-status="pagar"] {
+  background: #f0e8f6;
+  color: var(--hoved);
+}
+
+.oversikt-rute[data-status="ferdig"] {
+  background: #e9f1e8;
+  color: #4c7552;
+}
+
+.oversikt-rute .antall {
+  color: inherit;
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+/* ---------- Underfaner og valgknapper ---------- */
+.underfaner,
+.valg-gruppe {
+  background: #ede6ea;
+}
+
+.underfane.aktiv {
+  box-shadow: 0 1px 2px rgba(60, 40, 70, 0.06), 0 2px 8px rgba(60, 40, 70, 0.08);
+}
+
+.valg-gruppe button.aktiv {
+  background: var(--kort);
+  color: var(--hoved);
+  box-shadow: 0 1px 2px rgba(60, 40, 70, 0.06), 0 2px 8px rgba(60, 40, 70, 0.08);
+}
+
+.valg-gruppe.chips button {
+  border: 0;
+  box-shadow: 0 1px 2px rgba(60, 40, 70, 0.05);
+  color: var(--tekst);
+}
+
+.valg-gruppe.chips button.aktiv {
+  background: var(--hoved);
+  color: #fff;
+}
+
+.filter-gruppe button {
+  border: 0;
+  box-shadow: 0 1px 2px rgba(60, 40, 70, 0.05);
+}
+
+.filter-gruppe button.aktiv {
+  background: var(--hoved);
+}
+
+/* ---------- Menyen nederst: svevende "pille" ---------- */
+.faner {
+  left: 16px;
+  right: 16px;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 6px;
+  border: 0;
+  border-radius: 24px;
+  background: rgba(255, 253, 251, 0.88);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 30px rgba(60, 40, 70, 0.14);
+}
+
+.fane {
+  min-height: 48px;
+  border-radius: 18px;
+}
+
+.fane.aktiv {
+  background: var(--hoved);
+  color: #fff;
+}
+
+/* ---------- Tellere ---------- */
+.teller h2 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tall {
+  font-size: 5.5rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--hoved);
+  margin: 8px 0 16px;
+}
+
+.teller-knapper .knapp {
+  border-radius: 20px;
+}
+
+.liten-teller {
+  border: 0;
+  box-shadow: var(--skygge);
+  padding: 10px;
+}
+
+.liten-teller-tall {
+  color: var(--hoved);
+}
+
+.ny-teller-flis,
+.knapp.ny-teller {
+  border-color: #dccfe2;
+}
+
+/* ---------- Diverse ---------- */
+.status-merke {
+  padding: 3px 12px;
+  font-size: 0.9rem;
+}
+
+.ferdig-navn {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.pause-melding {
+  background: #f1edf0;
+}
+
+.valgt-fil {
+  background: var(--felt);
+}
+
+.dialog {
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.stjerner button.aktiv,
+.stjerne-info {
+  color: #d9a23a; /* gylne stjerner */
+}
+
+.stjerner button {
+  color: #e6dde3;
+}
+
+/* Valgknappene (Sweater, Hat, ...) får en svak bakgrunn så de synes på det hvite kortet */
+.valg-gruppe.chips button {
+  background: var(--felt);
+  box-shadow: none;
+}
+
+label.knapp {
+  font-weight: 600;
+}
+
+/* "Last change: 5 min ago" under den store telleren */
+.sist-endret {
+  margin: 4px 0 0;
+  color: var(--dempet);
+  font-size: 0.9rem;
+  text-align: center;
+}

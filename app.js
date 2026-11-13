@@ -81,7 +81,7 @@ const RAD_FELT = {
 
 // Liste med alle prosjekter. Hvert prosjekt ser slik ut:
 // { id, navn, status: 'vil'|'pagar'|'ferdig', pause: true/false,
-//   tellere: [{ id, navn, verdi }],          (alle tellerne)
+//   tellere: [{ id, navn, verdi, endret }],  (alle tellerne; endret = sist trykket +/-)
 //   hovedTeller: id,                         (telleren som vises stor)
 //   garn:   [{ navn, mengde }],
 //   pinner: [{ storrelse, lengde }],
@@ -707,6 +707,9 @@ function lagProsjektRad(prosjekt, visTid = false) {
     img.hidden = true; // vises når bildet er lastet
     miniatyr.append(img);
     visBildeI(img, prosjekt.id);
+  } else {
+    // Uten bilde: vis ikonet for det man lager (🧦, 🧣, ...), ellers et nøste
+    miniatyr.textContent = TYPE_IKON[prosjekt.type] || '🧶';
   }
 
   const navn = document.createElement('span');
@@ -1005,9 +1008,11 @@ function vibrer() {
 // Endrer en teller med +1 eller -1 (aldri under 0) og lagrer automatisk
 function endreTeller(prosjekt, teller, endring) {
   teller.verdi = Math.max(0, teller.verdi + endring);
+  teller.endret = Date.now(); // når akkurat denne telleren sist ble endret
   prosjekt.sistStrikket = Date.now(); // husk når du sist strikket
   lagreEndring(prosjekt);
   vibrer();
+  visSistEndret();
 }
 
 // Fjerner en teller (etter å ha spurt)
@@ -1027,6 +1032,7 @@ function visTellere(prosjekt, redigerId = null) {
   if (stor) {
     $('hoved-navn').textContent = stor.navn;
     $('hoved-tall').textContent = stor.verdi;
+    visSistEndret();
     if (stor.id === redigerId) $('hoved-blyant').click();
   }
 
@@ -1153,19 +1159,34 @@ $('hoved-minus').addEventListener('click', () => {
   $('hoved-tall').textContent = teller.verdi;
 });
 
-$('hoved-nullstill').addEventListener('click', async () => {
-  const prosjekt = aapentProsjekt();
-  const teller = hovedTeller(prosjekt);
-  if (!(await bekreft(`Reset "${teller.navn}" to 0?`, 'Reset'))) return;
-  teller.verdi = 0;
-  lagreEndring(prosjekt);
-  $('hoved-tall').textContent = 0;
-});
+// --- "Last change: 5 min ago" under den store telleren ---
+// Gjør et tidspunkt om til "Just now", "5 min ago", "2 h ago" osv.
+function hvorLengeSiden(tid) {
+  const minutter = Math.floor((Date.now() - tid) / 60000);
+  if (minutter < 1) return 'Just now';
+  if (minutter < 60) return `${minutter} min ago`;
+  const timer = Math.floor(minutter / 60);
+  if (timer < 24) {
+    const rest = minutter % 60;
+    return rest ? `${timer} h ${rest} min ago` : `${timer} h ago`;
+  }
+  return tidSomTekst(tid); // eldre enn et døgn: "Yesterday, 14:32" osv.
+}
 
-$('hoved-fjern').addEventListener('click', () => {
+function visSistEndret() {
+  const felt = $('hoved-sist');
   const prosjekt = aapentProsjekt();
-  fjernTeller(prosjekt, hovedTeller(prosjekt));
-});
+  const teller = prosjekt && hovedTeller(prosjekt);
+  if (!teller) return;
+  felt.textContent = teller.endret
+    ? `Last change: ${hvorLengeSiden(teller.endret)}`
+    : 'No changes yet';
+}
+
+// Oppdater teksten hvert 20. sekund mens tellersiden er åpen
+setInterval(() => {
+  if (gjeldende.skjerm === 'teller') visSistEndret();
+}, 20000);
 
 // Blyanten ved den store telleren: endre navnet
 $('hoved-blyant').addEventListener('click', () => {

@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
   <!-- Fargen på nettleserens adresselinje / statuslinje på mobil -->
-  <meta name="theme-color" content="#6b4c8a">
+  <meta name="theme-color" content="#f7f3ef">
 
   <!-- Gjør at appen ser ut som en ekte app når den legges til på hjemskjermen på iPhone -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -203,10 +203,8 @@
           <button class="knapp minus" id="hoved-minus" aria-label="Minus one">−1</button>
           <button class="knapp pluss" id="hoved-pluss" aria-label="Plus one">+1</button>
         </div>
-        <div class="to-knapper">
-          <button class="knapp nullstill" id="hoved-nullstill">Reset</button>
-          <button class="knapp nullstill" id="hoved-fjern">Remove</button>
-        </div>
+        <!-- Hvor lenge siden telleren sist ble endret, f.eks. "Last change: 5 min ago" -->
+        <p id="hoved-sist" class="sist-endret"></p>
       </div>
 
       <!-- De små tellerne ligger bortover, og man kan scrolle sidelengs.
