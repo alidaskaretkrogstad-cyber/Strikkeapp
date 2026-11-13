@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -11,6 +11,7 @@
 
   <!-- Gjør at appen ser ut som en ekte app når den legges til på hjemskjermen på iPhone -->
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Strikkeapp">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
 
@@ -20,15 +21,60 @@
   <!-- PWA-manifestet: forteller telefonen navn, ikon og farger for appen -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon-192.png">
-  <link rel="stylesheet" href="style.css">
+  <!-- Utseendet er delt opp i flere filer i mappen css/ -->
+  <link rel="stylesheet" href="css/grunn.css">
+  <link rel="stylesheet" href="css/knapper.css">
+  <link rel="stylesheet" href="css/prosjekter.css">
+  <link rel="stylesheet" href="css/teller.css">
+  <link rel="stylesheet" href="css/skjema.css">
+  <link rel="stylesheet" href="css/logg-inn.css">
 </head>
 <body>
 
-  <!-- Appen består av seks "skjermer" (section). Bare én vises om gangen;
-       app.js skjuler/viser dem med "hidden". -->
+  <!-- Appen består av flere "skjermer" (section). Bare én vises om gangen;
+       js/ui/navigasjon.js skjuler/viser dem med "hidden". -->
+
+  <!-- ===================== LASTER (vises mens appen starter) ===================== -->
+  <section id="laster-skjerm" class="laster">
+    <span class="laster-noste" aria-hidden="true">🧶</span>
+    <p>Loading…</p>
+  </section>
+
+  <!-- ===================== LOGG INN ===================== -->
+  <section id="logginn-skjerm" hidden>
+    <main class="innhold logginn">
+      <div class="logginn-topp">
+        <span class="logginn-noste" aria-hidden="true">🧶</span>
+        <h1>Strikkeapp</h1>
+        <p class="hint">Log in to keep your projects safe and in sync on all your devices.</p>
+      </div>
+
+      <form id="logginn-skjema" class="kort">
+        <label for="logginn-epost">Email</label>
+        <input id="logginn-epost" type="email" required autocomplete="email" inputmode="email">
+
+        <label for="logginn-passord">Password</label>
+        <input id="logginn-passord" type="password" required minlength="6" autocomplete="current-password">
+
+        <p id="logginn-feil" class="feilmelding" role="alert" hidden></p>
+
+        <div class="knapp-liste">
+          <button type="submit" class="knapp hoved">Log in</button>
+          <button type="button" id="lag-konto-knapp" class="knapp">Create account</button>
+          <button type="button" id="glemt-knapp" class="knapp nullstill">Forgot password?</button>
+        </div>
+      </form>
+
+      <!-- Vises bare hvis Firebase ikke er satt opp ennå -->
+      <div id="oppsett-melding" class="kort" hidden>
+        <h2 class="kort-tittel">Almost ready</h2>
+        <p>Firebase is not set up yet. Fill in <code>js/data/firebase-config.js</code> as described in README.md.</p>
+      </div>
+    </main>
+  </section>
 
   <!-- ===================== FORSIDE ===================== -->
-  <section id="hjem-skjerm" class="skjerm">
+  <section id="hjem-skjerm" class="skjerm" hidden>
     <header class="topp">
       <h1>Strikkeapp</h1>
     </header>
@@ -64,6 +110,12 @@
         <h2 class="seksjon-tittel">Recently knitted</h2>
         <ul id="nylig-liste" class="prosjektliste"></ul>
       </div>
+
+      <!-- Hvem som er logget inn -->
+      <p class="konto">
+        Logged in as <span id="konto-epost"></span><br>
+        <button id="logg-ut-knapp" class="tekst-knapp">Log out</button>
+      </p>
     </main>
   </section>
 
@@ -92,7 +144,7 @@
       <!-- Vises bare på "To knit"-fanen -->
       <button id="ny-to-knit-knapp" class="knapp hoved liste-ny-knapp" hidden>+ New project</button>
 
-      <!-- Her fyller app.js inn prosjektene -->
+      <!-- Her fyller js/skjermer/prosjekter.js inn prosjektene -->
       <ul id="prosjektliste" class="prosjektliste"></ul>
       <p id="tom-melding" class="tom-melding" hidden>No projects here yet.</p>
     </main>
@@ -118,7 +170,7 @@
           <label for="nytt-navn">Name</label>
           <input id="nytt-navn" type="text" placeholder="E.g. Winter sweater" required maxlength="80" autocomplete="off">
 
-          <!-- Hva lager du? app.js fyller inn knappene (Sweater, Hat, ...) -->
+          <!-- Hva lager du? JavaScript fyller inn knappene (Sweater, Hat, ...) -->
           <span class="felt-tittel">What are you making?</span>
           <div id="ny-type" class="valg-gruppe chips"></div>
           <input id="ny-type-annet" type="text" maxlength="60" autocomplete="off" placeholder="What are you making?" hidden>
@@ -148,7 +200,7 @@
           <label for="nytt-oppskrift" class="knapp">📎 Add pattern (PDF or image)</label>
         </div>
 
-        <!-- Utstyr. app.js fyller inn én rad per garn / pinne. -->
+        <!-- Utstyr. JavaScript fyller inn én rad per garn / pinne. -->
         <div class="kort">
           <h2 class="kort-tittel">Equipment</h2>
 
@@ -208,7 +260,7 @@
       </div>
 
       <!-- De små tellerne ligger bortover, og man kan scrolle sidelengs.
-           app.js fyller inn boksene, pluss en "+ Add counter"-boks til slutt. -->
+           JavaScript fyller inn boksene, pluss en "+ Add counter"-boks til slutt. -->
       <p id="bytt-hint" class="hint liten-hint" hidden>Tap a counter to make it big</p>
       <div id="ekstra-tellere" class="ekstra-tellere"></div>
 
@@ -394,6 +446,7 @@
           <a id="oppskrift-fil-lenke" class="knapp hoved lenke-knapp" target="_blank" rel="noopener" hidden>📄 Open pattern</a>
           <a id="oppskrift-nett-lenke" class="knapp lenke-knapp" target="_blank" rel="noopener" hidden>🔗 Open pattern link</a>
         </div>
+        <p id="oppskrift-laster" class="hint" hidden>Loading pattern…</p>
         <p id="ingen-oppskrift" class="hint">No pattern added yet. Add a PDF or a photo of the pattern below, or add a link under Details.</p>
       </div>
 
@@ -409,7 +462,7 @@
 
   <!-- ===================== MENY NEDERST ===================== -->
   <!-- Vises på forsiden og på Projects, men ikke inne i et prosjekt. -->
-  <nav id="meny" class="faner" aria-label="Menu">
+  <nav id="meny" class="faner" aria-label="Menu" hidden>
     <button class="fane aktiv" data-mal="hjem">Home</button>
     <button class="fane" data-mal="prosjekter">Projects</button>
   </nav>
@@ -427,6 +480,7 @@
     </form>
   </dialog>
 
-  <script src="app.js"></script>
+  <!-- type="module" lar JavaScript-filene importere hverandre -->
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

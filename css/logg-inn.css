@@ -1,0 +1,55 @@
+/* =========================================================
+   INNLOGGING OG LASTING
+   ========================================================= */
+
+/* "Loading…" mens appen starter */
+.laster {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: var(--dempet);
+}
+
+.laster-noste {
+  font-size: 3rem;
+  animation: vugg 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes vugg {
+  from { transform: rotate(-12deg); }
+  to   { transform: rotate(12deg); }
+}
+
+/* Innloggingssiden */
+.logginn {
+  padding-top: max(48px, env(safe-area-inset-top));
+}
+
+.logginn-topp {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.logginn-noste {
+  font-size: 3.2rem;
+}
+
+.logginn-topp h1 {
+  margin: 4px 0 0;
+  color: var(--hoved);
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+
+.feilmelding {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f8e9ec;
+  color: var(--fare);
+  font-size: 0.95rem;
+}

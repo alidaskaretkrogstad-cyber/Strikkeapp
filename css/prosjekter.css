@@ -1,0 +1,195 @@
+/* =========================================================
+   PROSJEKTER
+   Forsiden (ruter med antall) og listene med prosjekter.
+   ========================================================= */
+
+/* ---------- Forsiden: tre fargede ruter med antall prosjekter ---------- */
+.oversikt {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.oversikt-rute {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 108px;
+  padding: 12px 6px;
+  border: 0;
+  border-radius: var(--radius);
+  box-shadow: var(--skygge);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.oversikt-rute[data-status="vil"] {
+  background: #fbefe7;
+  color: #a2643f;
+}
+
+.oversikt-rute[data-status="pagar"] {
+  background: #f0e8f6;
+  color: var(--hoved);
+}
+
+.oversikt-rute[data-status="ferdig"] {
+  background: #e9f1e8;
+  color: #4c7552;
+}
+
+.antall {
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* "Logged in as ..." nederst på forsiden */
+.konto {
+  margin: 36px 0 0;
+  color: var(--dempet);
+  font-size: 0.85rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Prosjektlisten ---------- */
+.prosjektliste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Én rad: [prosjektet] og eventuelt [Resume]-knappen ved siden av */
+.prosjekt-element {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  border-radius: var(--radius);
+}
+
+.prosjekt-rad {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 72px;
+  margin: 0;
+  padding: 12px 16px 12px 12px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--kort);
+  box-shadow: var(--skygge);
+  color: var(--tekst);
+  font-size: 1.1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.prosjekt-navn {
+  flex: 1; /* navnet tar all ledig plass i midten */
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Lite bilde (eller ikon) til venstre */
+.miniatyr {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f3ebf7, #e8dcef);
+  font-size: 1.6rem;
+}
+
+.miniatyr img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fyll ruten uten å strekke bildet */
+}
+
+/* Liten tekst til høyre (tid, teller eller stjerner) */
+.prosjekt-info {
+  flex-shrink: 0;
+  color: var(--dempet);
+  font-size: 0.85rem;
+}
+
+.stjerne-info {
+  color: var(--gull);
+  letter-spacing: 1px;
+}
+
+.tom-melding {
+  padding: 24px 0;
+  color: var(--dempet);
+  text-align: center;
+}
+
+/* ---------- Pause ---------- */
+/* Prosjekter på pause: dempet bakgrunn og stiplet kant */
+.prosjekt-rad.pauset {
+  background: var(--pause);
+  box-shadow: none;
+  outline: 1.5px dashed var(--kant);
+  outline-offset: -1.5px;
+  color: var(--dempet);
+}
+
+.prosjekt-rad.pauset .miniatyr {
+  opacity: 0.6;
+}
+
+/* "Resume"-knappen ved siden av et prosjekt på pause */
+.gjenoppta-knapp {
+  flex-shrink: 0;
+  align-self: center;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--hoved-lys);
+  color: var(--hoved);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Skillelinje "Paused projects":  ——— Paused projects ——— */
+.skillelinje {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 12px;
+  color: var(--dempet);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.skillelinje::before,
+.skillelinje::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--kant);
+}
+
+/* ---------- Kort lilla glød på en rad eller teller som nettopp hoppet opp ---------- */
+.hoppet-opp {
+  animation: glod 1.2s ease-out;
+}
+
+@keyframes glod {
+  from { box-shadow: 0 0 0 4px var(--aksent); }
+  to   { box-shadow: 0 0 0 4px transparent; }
+}

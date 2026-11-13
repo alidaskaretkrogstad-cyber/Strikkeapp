@@ -1,0 +1,223 @@
+/* =========================================================
+   TELLERSIDEN
+   Den store telleren og de små tellerne bortover under den.
+   ========================================================= */
+
+/* Pattern-knappen øverst */
+.monster-topp {
+  margin-bottom: 16px;
+}
+
+/* Meldingen øverst når prosjektet er på pause */
+.pause-melding {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: var(--pause);
+  color: var(--dempet);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ---------- Den store telleren ---------- */
+.teller {
+  text-align: center;
+}
+
+/* Navnet (ROWS) med blyanten ved siden av, midtstilt */
+.teller-navn-rad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.teller h2 {
+  margin: 0;
+  color: var(--dempet);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tall {
+  display: block;
+  margin: 8px 0 16px;
+  color: var(--hoved);
+  font-size: 5.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums; /* tallene hopper ikke når de endres */
+}
+
+.teller-knapper {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* +1 er dobbelt så stor, den brukes mest */
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.teller-knapper .knapp {
+  min-height: 88px;
+  border-radius: 20px;
+  font-size: 2rem;
+}
+
+/* +-knappene: klarere lilla */
+.knapp.pluss {
+  background: linear-gradient(135deg, #9a6fc0, #7c52a3);
+  box-shadow: 0 6px 16px rgba(138, 95, 176, 0.3);
+  color: #fff;
+}
+
+/* "Last change: 5 min ago" */
+.sist-endret {
+  margin: 6px 0 0;
+  color: var(--dempet);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* ---------- Blyant og navnefelt (endre navn på tellere) ---------- */
+.blyant {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 1rem;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.navn-felt {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 10px;
+  font-size: 1rem;
+}
+
+.teller-navn-rad .navn-felt {
+  max-width: 220px;
+  text-align: center;
+}
+
+/* ---------- De små tellerne ----------
+   De ligger bortover. Er det for mange til skjermen,
+   kan man scrolle sidelengs. */
+.liten-hint {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.ekstra-tellere {
+  display: flex;
+  gap: 10px;
+  margin: 0 -16px 16px;   /* går helt ut til kanten av skjermen ... */
+  padding: 2px 16px 10px; /* ... men innholdet starter på linje med resten */
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: var(--hoved-lys) transparent;
+}
+
+.ekstra-tellere::-webkit-scrollbar {
+  height: 6px;
+}
+
+.ekstra-tellere::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: var(--hoved-lys);
+}
+
+.liten-teller {
+  display: flex;
+  flex: 0 0 148px;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: var(--radius);
+  background: var(--kort);
+  box-shadow: var(--skygge);
+  text-align: center;
+  scroll-snap-align: start;
+  cursor: pointer; /* man kan trykke på boksen for å gjøre den stor */
+}
+
+/* Øverst i boksen: navn, ✏️ og × */
+.liten-teller-topp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.liten-teller-navn {
+  flex: 1;
+  padding-left: 4px;
+  color: var(--dempet);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.liten-teller-topp .blyant,
+.liten-teller-topp .fjern-rad {
+  width: 30px;
+  height: 30px;
+  font-size: 0.9rem;
+}
+
+.liten-teller-topp .fjern-rad {
+  font-size: 1.2rem;
+}
+
+.liten-teller-tall {
+  display: block;
+  margin: 0 0 6px;
+  color: var(--hoved);
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.liten-teller-knapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.liten-teller-knapper .knapp {
+  min-height: 44px;
+  font-size: 1.4rem;
+}
+
+/* "+ Add counter"-boksen til slutt i raden */
+.ny-teller-flis {
+  display: flex;
+  flex: 0 0 110px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 140px;
+  border: 2px dashed #dccfe2;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--hoved);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.pluss-tegn {
+  font-size: 2rem;
+  line-height: 1;
+}

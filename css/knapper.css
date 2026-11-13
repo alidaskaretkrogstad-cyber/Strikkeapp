@@ -1,0 +1,268 @@
+/* =========================================================
+   KNAPPER OG VALG
+   Vanlige knapper, underfaner, valgknapper, filter og stjerner.
+   ========================================================= */
+
+/* ---------- Vanlige knapper ---------- */
+.knapp {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--hoved-lys);
+  color: var(--hoved);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+/* Liten "trykk"-effekt så man kjenner at knappen reagerer */
+.knapp:active {
+  transform: scale(0.97);
+}
+
+.knapp:disabled {
+  opacity: 0.6;
+}
+
+/* Hovedknapp: lilla med fargeovergang */
+.knapp.hoved {
+  background: linear-gradient(135deg, #6f4c93, #553873);
+  color: #fff;
+  box-shadow: var(--skygge-hoved);
+}
+
+.knapp.fare {
+  border: 1.5px solid var(--fare);
+  background: transparent;
+  color: var(--fare);
+}
+
+/* Diskret knapp uten bakgrunn (Cancel, Remove photo, ...) */
+.knapp.nullstill {
+  min-height: 44px;
+  background: transparent;
+  color: var(--dempet);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.knapp.stor {
+  min-height: 64px;
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+}
+
+/* Mindre knapp, f.eks. "+ Add needle" */
+.knapp.liten-knapp {
+  min-height: 48px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+/* En <label> som ser ut og oppfører seg som en knapp (brukes for filvalg) */
+label.knapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: var(--hoved);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Lenker (<a>) som ser ut som knapper */
+.lenke-knapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+/* Knapp som bare er tekst (f.eks. "Log out") */
+.tekst-knapp {
+  padding: 8px;
+  border: 0;
+  background: none;
+  color: var(--hoved);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- Grupper av knapper ---------- */
+/* Liste med knapper under hverandre */
+.knapp-liste {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* To knapper ved siden av hverandre (Cancel | OK) */
+.to-knapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.handlinger {
+  display: grid;
+  gap: 10px;
+}
+
+/* ---------- Underfaner på Projects (To knit / In progress / Finished) ---------- */
+.underfaner {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--gruppe);
+}
+
+.underfane {
+  flex: 1;
+  min-height: 48px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--dempet);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.15;
+  cursor: pointer;
+}
+
+/* Valgt underfane ser ut som en hvit "knapp" som ligger oppå */
+.underfane.aktiv {
+  background: var(--kort);
+  color: var(--hoved);
+  box-shadow: var(--skygge-liten);
+}
+
+/* ---------- Valgknapper (Easy / Medium / Hard, Knitting / Crochet) ---------- */
+.valg-gruppe {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--gruppe);
+}
+
+.valg-gruppe button {
+  flex: 1;
+  min-height: 48px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--dempet);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.valg-gruppe button.aktiv {
+  background: var(--kort);
+  color: var(--hoved);
+  box-shadow: var(--skygge-liten);
+}
+
+/* Knitting / Crochet øverst i skjemaet */
+.valg-gruppe.teknikk-valg {
+  margin-bottom: 16px;
+}
+
+.teknikk-valg button {
+  min-height: 52px;
+  font-size: 1.05rem;
+}
+
+/* ---------- "What are you making?" (Sweater, Hat, ...) ----------
+   Runde knapper som brytes over flere linjer */
+.valg-gruppe.chips {
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  background: transparent;
+}
+
+.valg-gruppe.chips button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--felt);
+  box-shadow: none;
+  color: var(--tekst);
+  font-size: 0.95rem;
+}
+
+.valg-gruppe.chips button.aktiv {
+  background: var(--hoved);
+  color: #fff;
+}
+
+/* Det lille ikonet foran teksten (🧦, 🧣, ...) */
+.chip-ikon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+/* ---------- Filter på In progress (All / Active / Paused) ---------- */
+.filter-gruppe {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.filter-gruppe button {
+  flex: 1;
+  min-height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--kort);
+  box-shadow: 0 1px 2px rgba(60, 40, 70, 0.05);
+  color: var(--dempet);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter-gruppe button.aktiv {
+  background: var(--hoved);
+  color: #fff;
+}
+
+/* ---------- Stjerner (hvor godt likte du å strikke det?) ---------- */
+.stjerner {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.stjerner button {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #e6dde3; /* tom stjerne */
+  font-size: 2.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.stjerner button.aktiv {
+  color: var(--gull); /* fylt stjerne */
+}

@@ -1,0 +1,160 @@
+/* =========================================================
+   SKJEMAER OG DETALJER
+   Tekstfelt, garn/pinner-rader, bilder, detaljlisten og oppskriftssiden.
+   ========================================================= */
+
+/* ---------- Tekstfelt ---------- */
+label,
+.felt-tittel {
+  display: block;
+  margin: 4px 0 6px;
+  color: var(--dempet);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  margin-bottom: 12px;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  background: var(--felt);
+  color: var(--tekst);
+  font-size: 1.1rem; /* minst 16px hindrer automatisk zoom på iPhone */
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+input,
+select {
+  min-height: 52px;
+  padding: 0 14px;
+}
+
+textarea {
+  padding: 12px 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--aksent);
+  background: #fff;
+}
+
+/* Skjuler den kjedelige standard-filvelgeren, men lar den fortsatt virke */
+.skjult-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+/* Navnet på oppskriftsfilen man har valgt */
+.valgt-fil {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--felt);
+  overflow-wrap: anywhere;
+}
+
+/* "+ New project" på To knit-fanen */
+.liste-ny-knapp {
+  margin-bottom: 16px;
+}
+
+/* ---------- Garn og pinner: én rad per garn/pinne  [felt] [felt] [×] ---------- */
+.liste-rad {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.liste-rad input {
+  flex: 1;
+  min-width: 0; /* lar feltene krympe på smale skjermer */
+  margin-bottom: 0;
+}
+
+/* Lite ×-kryss for å fjerne en pinne eller en teller */
+.fjern-rad {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--dempet);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ---------- Bilder ---------- */
+.bilde-stort {
+  display: block;
+  width: 100%;
+  max-height: 340px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+/* Oppskriftsbildet vises helt (ikke beskåret), så hele mønsteret synes */
+.monster-bilde {
+  max-height: none;
+  object-fit: contain;
+}
+
+/* ---------- Detaljsiden ---------- */
+.status-linje {
+  margin: 0 0 12px;
+  color: var(--dempet);
+}
+
+.status-merke {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--hoved-lys);
+  color: var(--hoved);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Liste med informasjon: overskrift til venstre, verdi til høyre */
+.detaljer-liste {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin: 0 0 16px;
+}
+
+.detaljer-liste dt {
+  color: var(--dempet);
+  font-weight: 600;
+}
+
+.detaljer-liste dd {
+  margin: 0;
+  white-space: pre-wrap; /* behold linjeskift i notater */
+  overflow-wrap: anywhere;
+}
+
+/* Prosjektnavnet øverst på ferdig- og oppskriftssiden */
+.ferdig-navn {
+  margin: 0 0 12px;
+  color: var(--hoved);
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
