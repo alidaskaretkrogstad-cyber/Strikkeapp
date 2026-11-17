@@ -11,6 +11,7 @@ import { settValg, lesValg } from '../ui/valg.js';
 import { fyllRader, lesRader, raderSomTekst } from '../ui/rader.js';
 import { visBildeI } from '../ui/bilder.js';
 import { bekreft, visMelding } from '../ui/dialog.js';
+import { t, datoSprak } from '../sprak.js';
 
 const hovedHandling = $('hoved-handling');
 const detaljerBilde = $('detaljer-bilde');
@@ -21,11 +22,14 @@ function visDetaljer() {
   const prosjekt = aapentProsjekt();
   $('detaljer-tittel').textContent = prosjekt.navn;
   $('detaljer-status').textContent = statusTekst(prosjekt);
+  // Størrelsen man strikker vises rett under statusen
+  $('detaljer-storrelse').textContent = prosjekt.storrelse || '';
+  $('detaljer-storrelse-linje').hidden = !prosjekt.storrelse;
 
   // Hovedknappen: "Start project" for To knit, "Open counters" for In progress.
   // Ferdige prosjekter har ingen hovedknapp.
   $('handling-kort').hidden = prosjekt.status === 'ferdig';
-  hovedHandling.textContent = prosjekt.status === 'vil' ? '▶ Start project' : '🔢 Open counters';
+  hovedHandling.textContent = t(prosjekt.status === 'vil' ? '▶ Start project' : '🔢 Open counters');
 
   // Prosjektbilde
   if (prosjekt.harBilde) {
@@ -34,7 +38,7 @@ function visDetaljer() {
     detaljerBilde.hidden = true;
     detaljerBilde.removeAttribute('src');
   }
-  $('bilde-knapp').textContent = prosjekt.harBilde ? '📷 Change photo' : '📷 Add photo';
+  $('bilde-knapp').textContent = t(prosjekt.harBilde ? '📷 Change photo' : '📷 Add photo');
   $('fjern-bilde-knapp').hidden = !prosjekt.harBilde;
 
   visVurdering(prosjekt);
@@ -76,13 +80,13 @@ function visVurdering(prosjekt) {
   }
   // Prosjekter som ble ferdige i en eldre versjon av appen har ingen vurdering ennå
   const f = prosjekt.ferdig || {};
-  $('rediger-vurdering-knapp').textContent = prosjekt.ferdig ? '✏️ Edit review' : '✏️ Add review';
+  $('rediger-vurdering-knapp').textContent = t(prosjekt.ferdig ? '✏️ Edit review' : '✏️ Add review');
   fyllListe($('vurdering-liste'), [
-    ['Finished', f.dato ? new Date(f.dato).toLocaleDateString('en-GB') : ''],
-    ['Enjoyed it', f.likte ? stjerner(f.likte) : ''],
-    ['Result', f.resultat],
-    ['How it went', f.prosess],
-    ['Difficulty', VANSKELIGHET_NAVN[f.vanskelighet]],
+    [t('Finished'), f.dato ? new Date(f.dato).toLocaleDateString(datoSprak()) : ''],
+    [t('Enjoyed it'), f.likte ? stjerner(f.likte) : ''],
+    [t('Result'), f.resultat],
+    [t('How it went'), f.prosess],
+    [t('Difficulty'), f.vanskelighet ? t(VANSKELIGHET_NAVN[f.vanskelighet]) : ''],
   ]);
   kort.hidden = false;
 }
@@ -90,14 +94,13 @@ function visVurdering(prosjekt) {
 // Viser informasjonen som er fylt ut
 function visInfo(prosjekt) {
   const antall = fyllListe($('detaljer-liste'), [
-    ['Craft', TEKNIKK_NAVN[prosjekt.teknikk]],
-    ['Type', typeTekst(prosjekt)],
-    ['Designer', prosjekt.designer],
-    ['Difficulty', VANSKELIGHET_NAVN[prosjekt.vanskelighet]],
-    ['Yarn', raderSomTekst(prosjekt.garn)],
-    [prosjekt.teknikk === 'hekling' ? 'Hooks' : 'Needles', raderSomTekst(prosjekt.pinner)],
-    ['Size', prosjekt.storrelse],
-    ['Notes', prosjekt.notater],
+    [t('Craft'), t(TEKNIKK_NAVN[prosjekt.teknikk])],
+    [t('Type'), typeTekst(prosjekt)],
+    [t('Designer'), prosjekt.designer],
+    [t('Difficulty'), prosjekt.vanskelighet ? t(VANSKELIGHET_NAVN[prosjekt.vanskelighet]) : ''],
+    [t('Yarn'), raderSomTekst(prosjekt.garn)],
+    [t(prosjekt.teknikk === 'hekling' ? 'Hooks' : 'Needles'), raderSomTekst(prosjekt.pinner)],
+    [t('Notes'), prosjekt.notater],
   ]);
   $('ingen-detaljer').hidden = antall > 0;
 }
@@ -195,14 +198,14 @@ $('bilde-input').addEventListener('change', async (hendelse) => {
     visDetaljer();
   } catch (feil) {
     console.error(feil);
-    await visMelding('The photo could not be saved.');
+    await visMelding(t('The photo could not be saved.'));
   } finally {
     input.value = '';
   }
 });
 
 $('fjern-bilde-knapp').addEventListener('click', async () => {
-  if (!(await bekreft('Remove the photo?', 'Remove'))) return;
+  if (!(await bekreft(t('Remove the photo?'), 'Remove'))) return;
   const prosjekt = aapentProsjekt();
   slettFil('bilde', prosjekt.id);
   prosjekt.harBilde = false;
@@ -214,7 +217,7 @@ $('fjern-bilde-knapp').addEventListener('click', async () => {
 // --- Slette prosjekt ---
 $('slett-knapp').addEventListener('click', async () => {
   const prosjekt = aapentProsjekt();
-  if (!(await bekreft(`Delete "${prosjekt.navn}"? This cannot be undone.`, 'Delete'))) return;
+  if (!(await bekreft(t('Delete "{navn}"? This cannot be undone.', { navn: prosjekt.navn }), 'Delete'))) return;
   slettProsjekt(prosjekt);
   gaTilHovedskjerm({ skjerm: 'prosjekter' });
 });

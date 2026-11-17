@@ -46,3 +46,6 @@ document.querySelectorAll('.oversikt-rute').forEach((rute) => {
 });
 
 $('ny-knapp').addEventListener('click', () => naviger({ skjerm: 'nytt' }));
+
+// Tannhjulet øverst til høyre
+$('innstillinger-knapp').addEventListener('click', () => naviger({ skjerm: 'innstillinger' }));

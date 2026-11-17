@@ -7,6 +7,7 @@ import { tilstand, finnProsjekt, hovedTeller, sistStrikket } from '../tilstand.j
 import { lagreEndring } from '../data/prosjekter.js';
 import { naviger, oppdaterSkjerm } from './navigasjon.js';
 import { visBildeI } from './bilder.js';
+import { t } from '../sprak.js';
 
 // Åpner et prosjekt fra en liste:
 // "In progress" går rett til tellerne, de andre til detaljer.
@@ -59,7 +60,7 @@ export function lagProsjektRad(prosjekt, visTid = false) {
   } else if (prosjekt.status === 'pagar') {
     // Viser den store telleren, f.eks. "Rows 12"
     const teller = hovedTeller(prosjekt);
-    info.textContent = prosjekt.pause ? '⏸ Paused' : teller ? `${teller.navn} ${teller.verdi}` : '';
+    info.textContent = prosjekt.pause ? '⏸ ' + t('Paused') : teller ? `${teller.navn} ${teller.verdi}` : '';
   } else if (prosjekt.status === 'ferdig') {
     // Ferdige prosjekter: stjernene du ga, eller ✓ hvis du ikke ga stjerner
     const likte = prosjekt.ferdig && prosjekt.ferdig.likte;
@@ -78,14 +79,14 @@ export function lagProsjektRad(prosjekt, visTid = false) {
   if (prosjekt.status === 'pagar' && prosjekt.pause) {
     const fortsett = document.createElement('button');
     fortsett.className = 'gjenoppta-knapp';
-    fortsett.textContent = '▶ Resume';
-    fortsett.setAttribute('aria-label', `Resume ${prosjekt.navn}`);
+    fortsett.textContent = t('▶ Resume');
+    fortsett.setAttribute('aria-label', t('Resume {navn}', { navn: prosjekt.navn }));
     fortsett.addEventListener('click', () => {
       // Hent prosjektet på nytt (det kan ha blitt oppdatert fra en annen enhet)
       const p = finnProsjekt(prosjekt.id);
       if (!p) return;
       p.pause = false;
-      lagreEndring(p); // "sist endret" = nå, så den havner øverst
+      lagreEndring(p);
       tilstand.uthevNeste = p.id; // vis hvor den hoppet
       oppdaterSkjerm();
     });

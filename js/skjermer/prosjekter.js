@@ -2,9 +2,20 @@
 // PROJECTS (liste med underfaner: To knit / In progress / Finished)
 // =========================================================
 import { $ } from '../hjelpere.js';
-import { tilstand, sistEndret } from '../tilstand.js';
+import { tilstand, sistEndret, sistStrikket } from '../tilstand.js';
 import { registrerSkjerm, naviger } from '../ui/navigasjon.js';
 import { lagProsjektRad, uthevProsjekt } from '../ui/prosjektrad.js';
+import { t } from '../sprak.js';
+
+// Hva hver fane sorteres etter (høyeste tall øverst):
+//   To knit:     sist laget
+//   In progress: sist strikket på
+//   Finished:    sist fullført
+const SORTERING = {
+  vil: (p) => p.opprettet || 0,
+  pagar: (p) => sistStrikket(p),
+  ferdig: (p) => (p.ferdig && p.ferdig.dato) || sistEndret(p),
+};
 
 const underfaneKnapper = document.querySelectorAll('.underfane');
 const filterKnapper = document.querySelectorAll('#pause-filter button');
@@ -27,10 +38,10 @@ function visProsjektliste() {
     knapp.classList.toggle('aktiv', knapp.dataset.filter === pauseFilter);
   });
 
-  // Plukk ut prosjektene med valgt status, sist endret øverst
+  // Plukk ut prosjektene med valgt status, og sorter dem (nyeste øverst)
   const iFanen = tilstand.prosjekter
     .filter((p) => p.status === valgtFane)
-    .sort((a, b) => sistEndret(b) - sistEndret(a));
+    .sort((a, b) => SORTERING[valgtFane](b) - SORTERING[valgtFane](a));
 
   // Del opp i aktive og pausede (bare In progress har pausede)
   let aktive = iFanen.filter((p) => !(erPagar && p.pause));
@@ -47,7 +58,7 @@ function visProsjektliste() {
   if (pausede.length > 0 && pauseFilter === 'alle') {
     const skille = document.createElement('li');
     skille.className = 'skillelinje';
-    skille.textContent = 'Paused projects';
+    skille.textContent = t('Paused projects');
     liste.append(skille);
   }
   pausede.forEach((prosjekt) => liste.append(lagProsjektRad(prosjekt)));
@@ -56,9 +67,9 @@ function visProsjektliste() {
   const tom = aktive.length + pausede.length === 0;
   $('tom-melding').hidden = !tom;
   if (tom) {
-    if (erPagar && pauseFilter === 'aktive') $('tom-melding').textContent = 'No active projects.';
-    else if (erPagar && pauseFilter === 'pause') $('tom-melding').textContent = 'No paused projects.';
-    else $('tom-melding').textContent = 'No projects here yet.';
+    if (erPagar && pauseFilter === 'aktive') $('tom-melding').textContent = t('No active projects.');
+    else if (erPagar && pauseFilter === 'pause') $('tom-melding').textContent = t('No paused projects.');
+    else $('tom-melding').textContent = t('No projects here yet.');
   }
 
   // Fremhev et nytt prosjekt (etter at siden er ferdig tegnet)

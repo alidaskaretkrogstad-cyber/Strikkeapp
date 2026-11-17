@@ -19,11 +19,57 @@
   --gruppe: #ede6ea;       /* bakgrunn bak underfaner og valgknapper */
   --pause: #f1edf0;        /* bakgrunn for prosjekter på pause */
   --gull: #d9a23a;         /* stjerner */
+  --paa-hoved: #fff;       /* tekst oppå hovedfargen */
+  --glass: rgba(247, 243, 239, 0.86);  /* topplinjen (gjennomsiktig) */
+  --glass-meny: rgba(255, 253, 251, 0.88); /* menyen nederst */
+  --felt-fokus: #fff;      /* tekstfelt man skriver i */
+  --tom-stjerne: #e6dde3;
+  --stiplet: #dccfe2;      /* kanten på "+ Add counter" */
+  --miniatyr: linear-gradient(135deg, #f3ebf7, #e8dcef);
+  --feil-bakgrunn: #f8e9ec;
+  --vil-bakgrunn: #fbefe7;  --vil-tekst: #a2643f;
+  --pagar-bakgrunn: #f0e8f6;
+  --ferdig-bakgrunn: #e9f1e8; --ferdig-tekst: #4c7552;
+  color-scheme: light;
   --radius: 20px;
   --skygge: 0 1px 2px rgba(60, 40, 70, 0.04), 0 6px 20px rgba(60, 40, 70, 0.07);
   --skygge-liten: 0 1px 2px rgba(60, 40, 70, 0.06), 0 2px 8px rgba(60, 40, 70, 0.08);
   --skygge-hoved: 0 6px 18px rgba(94, 63, 125, 0.28);
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+}
+
+/* ---------- Mørkemodus ----------
+   js/innstillinger.js setter data-tema="mork" på <html> når mørk modus
+   er valgt (eller når telefonen er i mørk modus og "System" er valgt). */
+:root[data-tema="mork"] {
+  --bakgrunn: #1c1720;
+  --kort: #282230;
+  --tekst: #eee6f2;
+  --dempet: #a89cb0;
+  --hoved: #c9a8e6;
+  --hoved-lys: #3a2f47;
+  --aksent: #b38ad8;
+  --fare: #e48a98;
+  --kant: #3a3242;
+  --felt: #332b3b;
+  --gruppe: #221c28;
+  --pause: #2a2430;
+  --gull: #e6b450;
+  --paa-hoved: #1c1720;
+  --glass: rgba(28, 23, 32, 0.86);
+  --glass-meny: rgba(40, 34, 48, 0.9);
+  --felt-fokus: #3a3143;
+  --tom-stjerne: #4a4052;
+  --stiplet: #54465f;
+  --miniatyr: linear-gradient(135deg, #3a2f47, #2f2639);
+  --feil-bakgrunn: #4a2a32;
+  --vil-bakgrunn: #3d2c22;  --vil-tekst: #e6ab82;
+  --pagar-bakgrunn: #352a42;
+  --ferdig-bakgrunn: #25352a; --ferdig-tekst: #9ccaa3;
+  --skygge: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.35);
+  --skygge-liten: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --skygge-hoved: 0 6px 18px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
 }
 
 /* Gjør størrelsesberegning enklere for alle elementer */
@@ -60,7 +106,7 @@ body {
   align-items: center;
   padding: 12px;
   padding-top: max(12px, env(safe-area-inset-top)); /* plass til "hakket" på iPhone */
-  background: rgba(247, 243, 239, 0.86);
+  background: var(--glass);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
   color: var(--hoved);
@@ -88,7 +134,8 @@ body {
 
 /* Runde knapper: pil tilbake (venstre) og hus (høyre) */
 .tilbake,
-.hjem-knapp {
+.hjem-knapp,
+.tannhjul-knapp {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,7 +151,8 @@ body {
 }
 
 .tilbake:active,
-.hjem-knapp:active {
+.hjem-knapp:active,
+.tannhjul-knapp:active {
   background: var(--hoved-lys);
 }
 
@@ -114,7 +162,8 @@ body {
   justify-self: start;
 }
 
-.hjem-knapp {
+.hjem-knapp,
+.tannhjul-knapp {
   grid-column: 3;
   grid-row: 1;
   justify-self: end;
@@ -134,7 +183,7 @@ body {
   margin: 0 auto;
   padding: 6px;
   border-radius: 24px;
-  background: rgba(255, 253, 251, 0.88);
+  background: var(--glass-meny);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
   box-shadow: 0 8px 30px rgba(60, 40, 70, 0.14);
@@ -156,7 +205,7 @@ body {
 
 .fane.aktiv {
   background: var(--hoved);
-  color: #fff;
+  color: var(--paa-hoved);
 }
 
 /* ---------- Innhold og kort ---------- */

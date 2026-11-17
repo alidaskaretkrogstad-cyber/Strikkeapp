@@ -10,6 +10,7 @@ import { settValg, lesValg } from '../ui/valg.js';
 import { fyllRader, lesRader } from '../ui/rader.js';
 import { visForhandsvisning } from '../ui/bilder.js';
 import { visMelding } from '../ui/dialog.js';
+import { t } from '../sprak.js';
 
 const skjema = $('nytt-prosjekt-skjema');
 const bildeInput = $('nytt-bilde');
@@ -53,13 +54,14 @@ skjema.addEventListener('submit', async (hendelse) => {
     navn: navn,
     status: $('ny-status').value,
     pause: false,
-    tellere: [{ id: lagId(), navn: 'Rows', verdi: 0 }], // starter med én radteller
+    tellere: [{ id: lagId(), navn: t('Rows'), verdi: 0 }], // starter med én radteller
     garn: lesRader($('nytt-garn')),
     pinner: lesRader($('nytt-pinner')),
     vanskelighet: lesValg($('ny-vanskelighet')),
     teknikk: lesValg($('ny-teknikk')) || 'strikking',
     type: lesValg($('ny-type')),
     typeAnnet: $('ny-type-annet').value.trim(),
+    storrelse: $('ny-storrelse').value.trim(),
     harBilde: false,
     opprettet: Date.now(),
     endret: Date.now(),
@@ -74,7 +76,7 @@ skjema.addEventListener('submit', async (hendelse) => {
       nytt.oppskriftFil = { navn: oppskrift.name, type: oppskrift.type, versjon };
     } catch (feil) {
       console.error(feil);
-      await visMelding('The pattern could not be saved, but the project was created.');
+      await visMelding(t('The pattern could not be saved, but the project was created.'));
     }
   }
 
@@ -88,7 +90,7 @@ skjema.addEventListener('submit', async (hendelse) => {
       nytt.bildeVersjon = versjon;
     } catch (feil) {
       console.error(feil);
-      await visMelding('The photo could not be saved, but the project was created.');
+      await visMelding(t('The photo could not be saved, but the project was created.'));
     }
   }
 

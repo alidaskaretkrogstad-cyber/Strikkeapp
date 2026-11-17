@@ -28,6 +28,16 @@
   <link rel="stylesheet" href="css/teller.css">
   <link rel="stylesheet" href="css/skjema.css">
   <link rel="stylesheet" href="css/logg-inn.css">
+
+  <!-- Velg lys/mørk modus med en gang, så skjermen ikke blinker hvit ved oppstart
+       i mørk modus. (Resten styres av js/innstillinger.js.) -->
+  <script>
+    try {
+      var tema = JSON.parse(localStorage.getItem('strikkeapp-innstillinger') || '{}').tema || 'system';
+      var mork = tema === 'mork' || (tema === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.dataset.tema = mork ? 'mork' : 'lys';
+    } catch (e) {}
+  </script>
 </head>
 <body>
 
@@ -77,6 +87,8 @@
   <section id="hjem-skjerm" class="skjerm" hidden>
     <header class="topp">
       <h1>Strikkeapp</h1>
+      <!-- Tannhjulet: åpner Settings -->
+      <button id="innstillinger-knapp" class="tannhjul-knapp" aria-label="Settings"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     </header>
 
     <main class="innhold med-meny">
@@ -110,12 +122,6 @@
         <h2 class="seksjon-tittel">Recently knitted</h2>
         <ul id="nylig-liste" class="prosjektliste"></ul>
       </div>
-
-      <!-- Hvem som er logget inn -->
-      <p class="konto">
-        Logged in as <span id="konto-epost"></span><br>
-        <button id="logg-ut-knapp" class="tekst-knapp">Log out</button>
-      </p>
     </main>
   </section>
 
@@ -189,6 +195,9 @@
             <button type="button" data-verdi="middels">Medium</button>
             <button type="button" data-verdi="vanskelig">Hard</button>
           </div>
+
+          <label for="ny-storrelse">Size you are knitting</label>
+          <input id="ny-storrelse" type="text" maxlength="80" autocomplete="off" placeholder="E.g. M, or 2 years">
         </div>
 
         <!-- Oppskrift -->
@@ -257,12 +266,55 @@
         </div>
         <!-- Hvor lenge siden telleren sist ble endret, f.eks. "Last change: 5 min ago" -->
         <p id="hoved-sist" class="sist-endret"></p>
+        <!-- Påminnelse som gjelder akkurat denne raden, f.eks. "🔔 Increase" -->
+        <p id="paminnelse-na" class="paminnelse-na" hidden></p>
+        <!-- Neste påminnelse, f.eks. "Next: Increase at row 24" -->
+        <p id="paminnelse-neste" class="paminnelse-neste" hidden></p>
       </div>
 
       <!-- De små tellerne ligger bortover, og man kan scrolle sidelengs.
            JavaScript fyller inn boksene, pluss en "+ Add counter"-boks til slutt. -->
       <p id="bytt-hint" class="hint liten-hint" hidden>Tap a counter to make it big</p>
       <div id="ekstra-tellere" class="ekstra-tellere"></div>
+
+      <!-- Påminnelser om gjentakelser, f.eks. "øk hver 6. rad" (js/ui/paminnelser.js) -->
+      <div class="kort">
+        <h2 class="kort-tittel">🔔 Reminders</h2>
+        <p id="ingen-paminnelser" class="hint">E.g. “Increase every 6th row”. You get a notice when you get there.</p>
+        <ul id="paminnelse-liste" class="paminnelse-liste"></ul>
+        <button id="ny-paminnelse-knapp" type="button" class="knapp liten-knapp">+ Add reminder</button>
+
+        <form id="paminnelse-skjema" hidden>
+          <label for="paminnelse-tekst">What should you do?</label>
+          <input id="paminnelse-tekst" type="text" required maxlength="80" autocomplete="off" placeholder="E.g. Increase 2 stitches">
+
+          <div id="paminnelse-teller-felt">
+            <label for="paminnelse-teller">Counter</label>
+            <select id="paminnelse-teller"></select>
+          </div>
+
+          <div class="tre-felt">
+            <div>
+              <label for="paminnelse-hver">Every … rows</label>
+              <input id="paminnelse-hver" type="number" required min="1" max="999" inputmode="numeric">
+            </div>
+            <div>
+              <label for="paminnelse-fra">From row</label>
+              <input id="paminnelse-fra" type="number" required min="0" max="99999" inputmode="numeric">
+            </div>
+            <div>
+              <label for="paminnelse-ganger">Times</label>
+              <input id="paminnelse-ganger" type="number" min="1" max="999" inputmode="numeric" placeholder="∞">
+            </div>
+          </div>
+          <p class="hint">Leave “Times” empty to repeat until the end.</p>
+
+          <div class="to-knapper">
+            <button type="button" id="avbryt-paminnelse" class="knapp nullstill">Cancel</button>
+            <button type="submit" class="knapp hoved">Save</button>
+          </div>
+        </form>
+      </div>
 
       <div class="kort handlinger">
         <button id="til-detaljer-knapp" class="knapp">ℹ️ Details</button>
@@ -334,6 +386,7 @@
       <div class="kort">
         <img id="detaljer-bilde" class="bilde-stort" alt="Photo of the project" hidden>
         <p class="status-linje">Status: <span id="detaljer-status" class="status-merke"></span></p>
+        <p id="detaljer-storrelse-linje" class="status-linje" hidden>Size: <span id="detaljer-storrelse" class="storrelse-merke"></span></p>
       </div>
 
       <!-- Vurderingen fra ferdig-siden (bare for ferdige prosjekter) -->
@@ -391,7 +444,7 @@
         <div id="rediger-pinner" class="rad-liste" data-felt="pinner"></div>
         <button type="button" class="knapp liten-knapp" data-ny-rad="rediger-pinner" data-tekst-strikk="+ Add needle" data-tekst-hekl="+ Add hook">+ Add needle</button>
 
-        <label for="rediger-storrelse">Size</label>
+        <label for="rediger-storrelse">Size you are knitting</label>
         <input id="rediger-storrelse" type="text" maxlength="80" autocomplete="off">
 
         <label for="rediger-lenke">Pattern link</label>
@@ -437,25 +490,137 @@
     </header>
 
     <main class="innhold">
-      <div class="kort">
+      <div class="monster-topp-info">
         <p id="monster-prosjektnavn" class="ferdig-navn"></p>
+        <!-- Størrelsen man strikker, så man vet hvilke tall man skal følge -->
+        <p id="monster-storrelse" class="storrelse-merke" hidden></p>
+      </div>
 
-        <!-- Er oppskriften et bilde, vises den her -->
-        <img id="oppskrift-bilde" class="bilde-stort monster-bilde" alt="Pattern" hidden>
-        <div class="knapp-liste">
-          <a id="oppskrift-fil-lenke" class="knapp hoved lenke-knapp" target="_blank" rel="noopener" hidden>📄 Open pattern</a>
-          <a id="oppskrift-nett-lenke" class="knapp lenke-knapp" target="_blank" rel="noopener" hidden>🔗 Open pattern link</a>
-        </div>
-        <p id="oppskrift-laster" class="hint" hidden>Loading pattern…</p>
-        <p id="ingen-oppskrift" class="hint">No pattern added yet. Add a PDF or a photo of the pattern below, or add a link under Details.</p>
+      <!-- Selve oppskriften vises rett på siden.
+           PDF: én side under den andre (js/ui/pdf-visning.js). Bilde: vises som det er.
+           Knip med to fingre for å zoome. -->
+      <div id="oppskrift-visning" class="oppskrift-visning" hidden>
+        <img id="oppskrift-bilde" class="oppskrift-side" alt="Pattern" hidden>
+        <div id="oppskrift-sider"></div>
+      </div>
+      <p id="oppskrift-laster" class="hint midtstilt" hidden>Loading pattern…</p>
+      <p id="ingen-oppskrift" class="hint midtstilt">No pattern added yet. Add a PDF or a photo of the pattern below, or add a link under Details.</p>
+
+      <!-- Lenke til oppskriften på nett (legges inn under Details) -->
+      <div id="nett-lenke-kort" class="kort" hidden>
+        <h2 class="kort-tittel">Pattern link</h2>
+        <a id="oppskrift-nett-lenke" class="knapp lenke-knapp" target="_blank" rel="noopener">🔗 Open pattern link</a>
       </div>
 
       <div class="kort">
+        <h2 class="kort-tittel">Pattern file</h2>
         <input id="oppskrift-input" class="skjult-input" type="file" accept="application/pdf,image/*">
-        <div class="knapp-liste">
+        <div class="knapp-liste romslig">
           <label for="oppskrift-input" id="oppskrift-knapp" class="knapp">📎 Add pattern (PDF or image)</label>
+          <!-- Åpner filen i telefonens egen PDF-/bildevisning -->
+          <a id="oppskrift-fil-lenke" class="knapp nullstill lenke-knapp" target="_blank" rel="noopener" hidden>Open in another app</a>
           <button id="fjern-oppskrift-knapp" class="knapp nullstill" hidden>Remove pattern file</button>
         </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ===================== INNSTILLINGER ===================== -->
+  <section id="innstillinger-skjerm" class="skjerm" hidden>
+    <header class="topp">
+      <button class="tilbake" aria-label="Back"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <h1>Settings</h1>
+    </header>
+
+    <main class="innhold">
+      <!-- Til kontosiden -->
+      <button id="til-konto-knapp" class="kort konto-rad">
+        <span class="konto-ikon" aria-hidden="true">👤</span>
+        <span class="konto-rad-tekst">
+          <strong>Account</strong>
+          <span id="konto-rad-epost" class="dempet-tekst"></span>
+        </span>
+        <span class="pil" aria-hidden="true">›</span>
+      </button>
+
+      <div class="kort">
+        <h2 class="kort-tittel">Language</h2>
+        <div id="sprak-valg" class="valg-gruppe" data-paakrevd>
+          <button type="button" data-verdi="en">🇬🇧 English</button>
+          <button type="button" data-verdi="no">🇳🇴 Norsk</button>
+        </div>
+      </div>
+
+      <div class="kort">
+        <h2 class="kort-tittel">Appearance</h2>
+        <!-- Lys, mørk eller følg telefonens innstilling -->
+        <div id="tema-valg" class="valg-gruppe" data-paakrevd>
+          <button type="button" data-verdi="lys">☀️ Light</button>
+          <button type="button" data-verdi="mork">🌙 Dark</button>
+          <button type="button" data-verdi="system">📱 Phone</button>
+        </div>
+        <p class="hint">“Phone” follows the light/dark setting on your phone.</p>
+      </div>
+
+      <div class="kort">
+        <h2 class="kort-tittel">Screen</h2>
+        <!-- Bryter (av/på) -->
+        <label class="bryter-rad" for="hold-vaaken">
+          <span>Keep the screen on</span>
+          <input id="hold-vaaken" type="checkbox" class="bryter">
+        </label>
+        <p id="vaaken-hint" class="hint">The screen will not turn off while the app is open.</p>
+      </div>
+    </main>
+  </section>
+
+  <!-- ===================== KONTO (Account) ===================== -->
+  <section id="konto-skjerm" class="skjerm" hidden>
+    <header class="topp">
+      <button class="tilbake" aria-label="Back"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <h1>Account</h1>
+    </header>
+
+    <main class="innhold">
+      <div class="kort">
+        <h2 class="kort-tittel">Your account</h2>
+        <dl id="konto-liste" class="detaljer-liste"></dl>
+        <!-- Vises bare hvis e-posten ikke er bekreftet -->
+        <button id="bekreft-epost-knapp" class="knapp liten-knapp" hidden>✉️ Send verification email</button>
+      </div>
+
+      <!-- Endre passord: man må skrive det gamle passordet også (Firebase krever det) -->
+      <form id="passord-skjema" class="kort">
+        <h2 class="kort-tittel">Change password</h2>
+        <label for="passord-gammelt">Current password</label>
+        <input id="passord-gammelt" type="password" required autocomplete="current-password">
+        <label for="passord-nytt">New password</label>
+        <input id="passord-nytt" type="password" required minlength="6" autocomplete="new-password">
+        <label for="passord-gjenta">Repeat new password</label>
+        <input id="passord-gjenta" type="password" required minlength="6" autocomplete="new-password">
+        <p id="passord-feil" class="feilmelding" role="alert" hidden></p>
+        <button type="submit" class="knapp hoved">Change password</button>
+      </form>
+
+      <div class="kort">
+        <button id="logg-ut-knapp" class="knapp">Log out</button>
+      </div>
+
+      <!-- Slette kontoen. Skjemaet vises først når man trykker på knappen. -->
+      <div class="kort fare-kort">
+        <h2 class="kort-tittel">Delete account</h2>
+        <button id="vis-slett-konto-knapp" class="knapp fare">🗑️ Delete account</button>
+
+        <form id="slett-konto-skjema" hidden>
+          <p class="fare-tekst"><strong>Warning:</strong> This deletes your account and ALL your projects, photos and patterns, on all your devices. It cannot be undone.</p>
+          <label for="slett-konto-passord">Write your password to confirm</label>
+          <input id="slett-konto-passord" type="password" required autocomplete="current-password">
+          <p id="slett-konto-feil" class="feilmelding" role="alert" hidden></p>
+          <div class="knapp-liste">
+            <button type="submit" class="knapp fare-fylt">Delete my account forever</button>
+            <button type="button" id="avbryt-slett-konto" class="knapp nullstill">Cancel</button>
+          </div>
+        </form>
       </div>
     </main>
   </section>
@@ -466,6 +631,10 @@
     <button class="fane aktiv" data-mal="hjem">Home</button>
     <button class="fane" data-mal="prosjekter">Projects</button>
   </nav>
+
+  <!-- ===================== VARSEL ===================== -->
+  <!-- Lite varsel øverst på skjermen, f.eks. når en påminnelse slår til -->
+  <div id="varsel" class="varsel" role="status" aria-live="assertive" hidden></div>
 
   <!-- ===================== DIALOGBOKS ===================== -->
   <!-- Appens egen spørreboks (brukes i stedet for nettleserens confirm/alert,

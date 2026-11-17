@@ -4,6 +4,7 @@
 // Alle filer som trenger dem, importerer "tilstand" herfra.
 // =========================================================
 import { STATUS_NAVN, TYPE_NAVN } from './konstanter.js';
+import { t } from './sprak.js';
 
 export const tilstand = {
   // Liste med alle prosjekter. Hvert prosjekt ser slik ut:
@@ -61,12 +62,12 @@ export function sistStrikket(prosjekt) {
 
 // Statusteksten som vises, f.eks. "In progress" eller "Paused"
 export function statusTekst(prosjekt) {
-  if (prosjekt.status === 'pagar' && prosjekt.pause) return 'Paused';
-  return STATUS_NAVN[prosjekt.status];
+  if (prosjekt.status === 'pagar' && prosjekt.pause) return t('Paused');
+  return t(STATUS_NAVN[prosjekt.status]);
 }
 
 // Teksten for hva prosjektet er, f.eks. "Sweater" eller det man skrev under Other
 export function typeTekst(prosjekt) {
-  if (prosjekt.type === 'annet') return prosjekt.typeAnnet || 'Other';
-  return TYPE_NAVN[prosjekt.type] || '';
+  if (prosjekt.type === 'annet') return prosjekt.typeAnnet || t('Other');
+  return TYPE_NAVN[prosjekt.type] ? t(TYPE_NAVN[prosjekt.type]) : '';
 }

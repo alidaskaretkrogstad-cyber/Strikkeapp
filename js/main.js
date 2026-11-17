@@ -6,6 +6,7 @@
 //   skjermer/  – én fil per skjerm (forsiden, tellerne, detaljer, ...)
 // =========================================================
 import { $ } from './hjelpere.js';
+import './innstillinger.js'; // lys/mørk modus og "hold skjermen våken"
 import { tilstand } from './tilstand.js';
 import { auth, onAuthStateChanged } from './data/firebase.js';
 import { erKonfigurert } from './data/firebase-config.js';
@@ -20,8 +21,14 @@ import './skjermer/nytt.js';
 import './skjermer/teller.js';
 import './skjermer/ferdig.js';
 import './skjermer/monster.js';
+import './skjermer/innstillinger.js';
+import './skjermer/konto.js';
 import { redigererDetaljer } from './skjermer/detaljer.js';
 import { visLoggInn, visOppsettMelding } from './skjermer/logg-inn.js';
+import { oversettSide, flertall } from './sprak.js';
+
+// Oversett teksten på siden til valgt språk (norsk/engelsk)
+oversettSide();
 
 let stoppLytting = null; // stopper lyttingen på prosjektene ved utlogging
 
@@ -38,7 +45,7 @@ function vedProsjektEndring(forste) {
         if (antall === 0) return;
         oppdaterSkjerm();
         await visMelding(
-          `${antall} project${antall === 1 ? '' : 's'} from this device ${antall === 1 ? 'was' : 'were'} saved to your account.`
+          flertall(antall, '{n} project from this device was saved to your account.', '{n} projects from this device were saved to your account.')
         );
       })
       .catch((feil) => console.error('Kunne ikke flytte gamle prosjekter:', feil));
@@ -74,7 +81,6 @@ function start() {
 
     $('logginn-skjerm').hidden = true;
     $('laster-skjerm').hidden = false;
-    $('konto-epost').textContent = bruker.email;
     stoppLytting = lyttPaProsjekter(vedProsjektEndring);
   });
 }

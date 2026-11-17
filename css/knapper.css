@@ -210,7 +210,7 @@ label.knapp {
 
 .valg-gruppe.chips button.aktiv {
   background: var(--hoved);
-  color: #fff;
+  color: var(--paa-hoved);
 }
 
 /* Det lille ikonet foran teksten (🧦, 🧣, ...) */
@@ -241,7 +241,7 @@ label.knapp {
 
 .filter-gruppe button.aktiv {
   background: var(--hoved);
-  color: #fff;
+  color: var(--paa-hoved);
 }
 
 /* ---------- Stjerner (hvor godt likte du å strikke det?) ---------- */
@@ -257,7 +257,7 @@ label.knapp {
   padding: 0;
   border: 0;
   background: transparent;
-  color: #e6dde3; /* tom stjerne */
+  color: var(--tom-stjerne); /* tom stjerne */
   font-size: 2.1rem;
   line-height: 1;
   cursor: pointer;
@@ -265,4 +265,10 @@ label.knapp {
 
 .stjerner button.aktiv {
   color: var(--gull); /* fylt stjerne */
+}
+
+/* Rød, fylt knapp for det aller farligste (slette kontoen) */
+.knapp.fare-fylt {
+  background: var(--fare);
+  color: #fff;
 }

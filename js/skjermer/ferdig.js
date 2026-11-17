@@ -12,6 +12,7 @@ import { registrerSkjerm, naviger, tilbake } from '../ui/navigasjon.js';
 import { settValg, lesValg } from '../ui/valg.js';
 import { visForhandsvisning } from '../ui/bilder.js';
 import { visMelding } from '../ui/dialog.js';
+import { t } from '../sprak.js';
 
 const skjema = $('ferdig-skjema');
 const bildeInput = $('ferdig-bilde');
@@ -23,11 +24,12 @@ function visFerdigSkjema() {
   const endrer = Boolean(tilstand.gjeldende.endre);
 
   skjema.reset();
-  $('ferdig-tittel').textContent = endrer ? 'Your review' : 'Finished! 🎉';
-  $('ferdig-lagre').textContent = endrer ? 'Save review' : '✓ Save as finished';
+  $('ferdig-tittel').textContent = t(endrer ? 'Your review' : 'Finished! 🎉');
+  $('ferdig-lagre').textContent = t(endrer ? 'Save review' : '✓ Save as finished');
   $('ferdig-prosjektnavn').textContent = prosjekt.navn;
-  $('ferdig-likte-tittel').textContent =
-    prosjekt.teknikk === 'hekling' ? 'How did you like crocheting it?' : 'How did you like knitting it?';
+  $('ferdig-likte-tittel').textContent = t(
+    prosjekt.teknikk === 'hekling' ? 'How did you like crocheting it?' : 'How did you like knitting it?'
+  );
 
   $('ferdig-resultat').value = f.resultat || '';
   $('ferdig-prosess').value = f.prosess || '';
@@ -55,7 +57,7 @@ skjema.addEventListener('submit', async (hendelse) => {
       prosjekt.bildeVersjon = versjon;
     } catch (feil) {
       console.error(feil);
-      await visMelding('The photo could not be saved.');
+      await visMelding(t('The photo could not be saved.'));
     }
   }
 

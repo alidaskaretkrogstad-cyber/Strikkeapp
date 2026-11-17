@@ -6,8 +6,8 @@
 // til skyen i bakgrunnen. Endringer fra de andre enhetene dine kommer
 // inn automatisk via lyttPaProsjekter().
 // =========================================================
-import { db, brukerId, collection, doc, setDoc, deleteDoc, onSnapshot } from './firebase.js';
-import { hentGamleProsjekter } from './lokal.js';
+import { db, brukerId, collection, doc, getDocs, setDoc, deleteDoc, onSnapshot } from './firebase.js';
+import { hentGamleProsjekter, tomLokal, BILDE_LAGER, OPPSKRIFT_LAGER } from './lokal.js';
 import { lesGammelFil, lagreFil, slettFil } from './filer.js';
 import { tilstand } from '../tilstand.js';
 import { lagId } from '../hjelpere.js';
@@ -42,6 +42,29 @@ export function slettProsjekt(prosjekt) {
   deleteDoc(doc(prosjektSamling(), prosjekt.id)).catch((feil) => console.error(feil));
   slettFil('bilde', prosjekt.id);
   slettFil('oppskrift', prosjekt.id);
+}
+
+// Sletter ALT som tilhører brukeren: alle prosjekter, bilder og oppskrifter,
+// både i skyen og på denne enheten. Brukes når kontoen slettes.
+export async function slettAlleData() {
+  const bruker = brukerId();
+
+  // Filene (bilder og oppskrifter), med alle bitene de er delt opp i
+  const filer = await getDocs(collection(db, 'brukere', bruker, 'filer'));
+  for (const fil of filer.docs) {
+    const deler = fil.data().deler || 0;
+    for (let i = 0; i < deler; i++) await deleteDoc(doc(fil.ref, 'deler', String(i)));
+    await deleteDoc(fil.ref);
+  }
+
+  // Prosjektene
+  const prosjekter = await getDocs(prosjektSamling());
+  for (const prosjekt of prosjekter.docs) await deleteDoc(prosjekt.ref);
+
+  // Kopiene på enheten
+  await tomLokal(BILDE_LAGER).catch(() => {});
+  await tomLokal(OPPSKRIFT_LAGER).catch(() => {});
+  tilstand.prosjekter = [];
 }
 
 // Lytter på prosjektene i skyen.

@@ -27,18 +27,18 @@
 }
 
 .oversikt-rute[data-status="vil"] {
-  background: #fbefe7;
-  color: #a2643f;
+  background: var(--vil-bakgrunn);
+  color: var(--vil-tekst);
 }
 
 .oversikt-rute[data-status="pagar"] {
-  background: #f0e8f6;
+  background: var(--pagar-bakgrunn);
   color: var(--hoved);
 }
 
 .oversikt-rute[data-status="ferdig"] {
-  background: #e9f1e8;
-  color: #4c7552;
+  background: var(--ferdig-bakgrunn);
+  color: var(--ferdig-tekst);
 }
 
 .antall {
@@ -48,14 +48,6 @@
 }
 
 /* "Logged in as ..." nederst på forsiden */
-.konto {
-  margin: 36px 0 0;
-  color: var(--dempet);
-  font-size: 0.85rem;
-  text-align: center;
-  overflow-wrap: anywhere;
-}
-
 /* ---------- Prosjektlisten ---------- */
 .prosjektliste {
   margin: 0;
@@ -108,7 +100,7 @@
   height: 56px;
   border-radius: 14px;
   overflow: hidden;
-  background: linear-gradient(135deg, #f3ebf7, #e8dcef);
+  background: var(--miniatyr);
   font-size: 1.6rem;
 }
 

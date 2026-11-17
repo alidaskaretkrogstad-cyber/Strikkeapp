@@ -14,20 +14,34 @@ import { lagreEndring } from '../data/prosjekter.js';
 import { registrerSkjerm, naviger } from '../ui/navigasjon.js';
 import { bekreft } from '../ui/dialog.js';
 import { redigerNavn } from '../ui/navnefelt.js';
+import {
+  visPaminnelseStatus,
+  visPaminnelseListe,
+  sjekkPaminnelser,
+  fjernPaminnelserFor,
+  lukkPaminnelseSkjema,
+} from '../ui/paminnelser.js';
+import { t } from '../sprak.js';
 
 function visTeller() {
   const prosjekt = aapentProsjekt();
   $('teller-tittel').textContent = prosjekt.navn;
   visTellere(prosjekt);
   visPause(prosjekt);
+  // Lukk "Add reminder"-skjemaet når man kommer til tellerne (men ikke hvis
+  // siden bare oppdateres mens man skriver)
+  if (tilstand.gjeldende.id !== sistViste) lukkPaminnelseSkjema();
+  sistViste = tilstand.gjeldende.id;
 }
+
+let sistViste = null; // prosjektet som sist ble vist her
 
 registrerSkjerm('teller', visTeller);
 
 // Finner en teller i prosjektet som er åpent nå
 function finnTeller(tellerId) {
   const prosjekt = aapentProsjekt();
-  const teller = prosjekt && prosjekt.tellere.find((t) => t.id === tellerId);
+  const teller = prosjekt && prosjekt.tellere.find((tl) => tl.id === tellerId);
   return { prosjekt, teller };
 }
 
@@ -42,6 +56,9 @@ function endreTeller(tellerId, endring) {
   lagreEndring(prosjekt);
   vibrer();
   visSistEndret();
+  if (endring > 0) sjekkPaminnelser(prosjekt, teller); // varsel hvis en påminnelse slår til
+  visPaminnelseStatus(prosjekt);
+  visPaminnelseListe(prosjekt);
   return teller.verdi;
 }
 
@@ -49,9 +66,10 @@ function endreTeller(tellerId, endring) {
 async function fjernTeller(tellerId) {
   const { teller } = finnTeller(tellerId);
   if (!teller) return;
-  if (!(await bekreft(`Remove the counter "${teller.navn}"?`, 'Remove'))) return;
+  if (!(await bekreft(t('Remove the counter "{navn}"?', { navn: teller.navn }), 'Remove'))) return;
   const prosjekt = aapentProsjekt();
-  prosjekt.tellere = prosjekt.tellere.filter((t) => t.id !== tellerId);
+  prosjekt.tellere = prosjekt.tellere.filter((tl) => tl.id !== tellerId);
+  fjernPaminnelserFor(prosjekt, tellerId);
   lagreEndring(prosjekt);
   visTellere(prosjekt);
 }
@@ -72,7 +90,7 @@ function visTellere(prosjekt, redigerId = null) {
   // --- De små, bortover ---
   const rad = $('ekstra-tellere');
   rad.innerHTML = '';
-  const sma = prosjekt.tellere.filter((t) => t !== stor);
+  const sma = prosjekt.tellere.filter((tl) => tl !== stor);
   sma.forEach((teller) => {
     const { boks, startRedigering } = lagLitenTeller(teller);
     rad.append(boks);
@@ -85,11 +103,15 @@ function visTellere(prosjekt, redigerId = null) {
   // "+ Add counter"-boksen til slutt i raden
   const ny = document.createElement('button');
   ny.className = 'ny-teller-flis';
-  ny.innerHTML = '<span class="pluss-tegn">+</span>Add counter';
+  ny.innerHTML = '<span class="pluss-tegn">+</span>';
+  ny.append(t('Add counter'));
   ny.addEventListener('click', leggTilTeller);
   rad.append(ny);
 
   $('bytt-hint').hidden = sma.length === 0;
+
+  visPaminnelseStatus(prosjekt);
+  visPaminnelseListe(prosjekt);
 }
 
 // Lager én liten teller-boks: navn, ✏️, ×, tall, og − / +
@@ -107,11 +129,11 @@ function lagLitenTeller(teller) {
   const blyant = document.createElement('button');
   blyant.className = 'blyant';
   blyant.textContent = '✏️';
-  blyant.setAttribute('aria-label', `Rename counter ${teller.navn}`);
+  blyant.setAttribute('aria-label', t('Rename counter {navn}', { navn: teller.navn }));
   const fjern = document.createElement('button');
   fjern.className = 'fjern-rad';
   fjern.textContent = '×';
-  fjern.setAttribute('aria-label', `Remove counter ${teller.navn}`);
+  fjern.setAttribute('aria-label', t('Remove counter {navn}', { navn: teller.navn }));
   topp.append(navn, blyant, fjern);
 
   // Tallet
@@ -125,11 +147,11 @@ function lagLitenTeller(teller) {
   const minus = document.createElement('button');
   minus.className = 'knapp minus';
   minus.textContent = '−';
-  minus.setAttribute('aria-label', `${teller.navn} minus one`);
+  minus.setAttribute('aria-label', t('{navn} minus one', { navn: teller.navn }));
   const pluss = document.createElement('button');
   pluss.className = 'knapp pluss';
   pluss.textContent = '+';
-  pluss.setAttribute('aria-label', `${teller.navn} plus one`);
+  pluss.setAttribute('aria-label', t('{navn} plus one', { navn: teller.navn }));
   knapper.append(minus, pluss);
 
   boks.append(topp, tall, knapper);
@@ -141,9 +163,9 @@ function lagLitenTeller(teller) {
 
   const startRedigering = () => {
     redigerNavn(navn, blyant, (nyttNavn) => {
-      const { prosjekt, teller: t } = finnTeller(id);
-      if (!t) return;
-      t.navn = nyttNavn;
+      const { prosjekt, teller: tl } = finnTeller(id);
+      if (!tl) return;
+      tl.navn = nyttNavn;
       lagreEndring(prosjekt);
     });
   };
@@ -170,7 +192,7 @@ function lagLitenTeller(teller) {
 // "+ Add counter": lag en ny teller og la brukeren skrive navnet med en gang
 function leggTilTeller() {
   const prosjekt = aapentProsjekt();
-  const ny = { id: lagId(), navn: `Counter ${prosjekt.tellere.length + 1}`, verdi: 0 };
+  const ny = { id: lagId(), navn: t('Counter {n}', { n: prosjekt.tellere.length + 1 }), verdi: 0 };
   prosjekt.tellere.push(ny);
   lagreEndring(prosjekt);
   visTellere(prosjekt, ny.id);
@@ -200,8 +222,8 @@ function visSistEndret() {
   const teller = prosjekt && hovedTeller(prosjekt);
   if (!teller) return;
   $('hoved-sist').textContent = teller.endret
-    ? `Last change: ${hvorLengeSiden(teller.endret)}`
-    : 'No changes yet';
+    ? t('Last change: {tid}', { tid: hvorLengeSiden(teller.endret) })
+    : t('No changes yet');
 }
 
 // Oppdater teksten hvert 20. sekund mens tellersiden er åpen
@@ -212,7 +234,7 @@ setInterval(() => {
 // --- Pause ---
 // Viser riktig tekst på pauseknappen, og meldingen øverst
 function visPause(prosjekt) {
-  $('pause-knapp').textContent = prosjekt.pause ? '▶ Resume project' : '⏸ Pause project';
+  $('pause-knapp').textContent = t(prosjekt.pause ? '▶ Resume project' : '⏸ Pause project');
   $('pause-melding').hidden = !prosjekt.pause;
 }
 

@@ -1,4 +1,5 @@
 // =========================================================
+import { t, datoSprak } from './sprak.js';
 // HJELPEFUNKSJONER
 // Små, generelle funksjoner som brukes mange steder.
 // =========================================================
@@ -19,30 +20,30 @@ export function stjerner(antall) {
 // Gjør et tidspunkt om til tekst: "Today, 14:32", "Yesterday, 09:10" eller "3 Nov, 18:05"
 export function tidSomTekst(tid) {
   const dato = new Date(tid);
-  const klokke = dato.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const klokke = dato.toLocaleTimeString(datoSprak(), { hour: '2-digit', minute: '2-digit' });
 
   const iDag = new Date();
   const iGaar = new Date();
   iGaar.setDate(iDag.getDate() - 1);
 
-  if (dato.toDateString() === iDag.toDateString()) return `Today, ${klokke}`;
-  if (dato.toDateString() === iGaar.toDateString()) return `Yesterday, ${klokke}`;
+  if (dato.toDateString() === iDag.toDateString()) return t('Today, {klokke}', { klokke });
+  if (dato.toDateString() === iGaar.toDateString()) return t('Yesterday, {klokke}', { klokke });
 
   // Tar med årstall bare hvis det ikke er i år
   const valg = { day: 'numeric', month: 'short' };
   if (dato.getFullYear() !== iDag.getFullYear()) valg.year = 'numeric';
-  return `${dato.toLocaleDateString('en-GB', valg)}, ${klokke}`;
+  return `${dato.toLocaleDateString(datoSprak(), valg)}, ${klokke}`;
 }
 
 // Gjør et tidspunkt om til "Just now", "5 min ago", "2 h ago" osv.
 export function hvorLengeSiden(tid) {
   const minutter = Math.floor((Date.now() - tid) / 60000);
-  if (minutter < 1) return 'Just now';
-  if (minutter < 60) return `${minutter} min ago`;
+  if (minutter < 1) return t('Just now');
+  if (minutter < 60) return t('{n} min ago', { n: minutter });
   const timer = Math.floor(minutter / 60);
   if (timer < 24) {
     const rest = minutter % 60;
-    return rest ? `${timer} h ${rest} min ago` : `${timer} h ago`;
+    return rest ? t('{h} h {m} min ago', { h: timer, m: rest }) : t('{h} h ago', { h: timer });
   }
   return tidSomTekst(tid); // eldre enn et døgn: "Yesterday, 14:32" osv.
 }

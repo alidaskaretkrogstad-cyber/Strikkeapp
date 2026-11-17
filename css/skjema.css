@@ -43,7 +43,7 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--aksent);
-  background: #fff;
+  background: var(--felt-fokus);
 }
 
 /* Skjuler den kjedelige standard-filvelgeren, men lar den fortsatt virke */
@@ -107,11 +107,6 @@ textarea:focus {
   object-fit: cover;
 }
 
-/* Oppskriftsbildet vises helt (ikke beskåret), så hele mønsteret synes */
-.monster-bilde {
-  max-height: none;
-  object-fit: contain;
-}
 
 /* ---------- Detaljsiden ---------- */
 .status-linje {
@@ -157,4 +152,196 @@ textarea:focus {
   font-weight: 600;
   text-align: center;
   overflow-wrap: anywhere;
+}
+
+/* ---------- Oppskriftssiden ---------- */
+.monster-topp-info {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.monster-topp-info .ferdig-navn {
+  margin-bottom: 8px;
+}
+
+/* "Size: M" – liten pille, brukes på oppskrifts- og detaljsiden */
+.storrelse-merke {
+  display: inline-block;
+  margin: 0;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: var(--hoved-lys);
+  color: var(--hoved);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Oppskriften: sidene ligger under hverandre med litt luft mellom */
+.oppskrift-visning {
+  margin-bottom: 20px;
+}
+
+#oppskrift-sider {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr); /* sidene skal aldri bli bredere enn skjermen */
+  gap: 12px;
+}
+
+/* Hver PDF-side (og oppskriftsbildet) vises som et hvitt "ark" */
+.oppskrift-side {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--skygge);
+}
+
+/* I mørk modus dempes de hvite arkene litt, så de ikke blender */
+:root[data-tema="mork"] .oppskrift-side {
+  filter: brightness(0.9);
+}
+
+.midtstilt {
+  text-align: center;
+}
+
+/* Mer luft mellom knappene (f.eks. under "Pattern file") */
+.knapp-liste.romslig {
+  gap: 14px;
+}
+
+/* ---------- Innstillinger: av/på-bryter ---------- */
+label.bryter-rad {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 52px;
+  margin: 0;
+  color: var(--tekst);
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Gjør en vanlig avkrysningsboks om til en bryter som skyves av/på */
+input.bryter {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  flex-shrink: 0;
+  width: 56px;
+  min-height: 0;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--tom-stjerne); /* samme grå som tomme stjerner */
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+input.bryter::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+input.bryter:checked {
+  background: var(--aksent);
+}
+
+input.bryter:checked::after {
+  transform: translateX(24px);
+}
+
+input.bryter:disabled {
+  opacity: 0.5;
+}
+
+input.bryter:focus {
+  border: 0;
+  background: var(--tom-stjerne);
+}
+
+input.bryter:checked:focus {
+  background: var(--aksent);
+}
+
+/* ---------- Innstillinger: "Account"-raden øverst ---------- */
+.konto-rad {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  border: 0;
+  color: var(--tekst);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.konto-rad:active {
+  background: var(--hoved-lys);
+}
+
+.konto-ikon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--hoved-lys);
+  font-size: 1.5rem;
+}
+
+.konto-rad-tekst {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dempet-tekst {
+  color: var(--dempet);
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.konto-rad .pil {
+  color: var(--dempet);
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+/* ---------- Slette kontoen ---------- */
+.fare-kort {
+  border: 1.5px solid var(--fare);
+}
+
+.fare-kort .kort-tittel {
+  color: var(--fare);
+}
+
+.fare-tekst {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--feil-bakgrunn);
+  color: var(--tekst);
+  font-size: 0.95rem;
 }

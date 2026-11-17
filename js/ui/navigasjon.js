@@ -18,6 +18,8 @@ const SKJERM_ID = {
   ferdig: 'ferdig-skjerm',
   detaljer: 'detaljer-skjerm',
   monster: 'monster-skjerm',
+  innstillinger: 'innstillinger-skjerm',
+  konto: 'konto-skjerm',
 };
 
 // Skjermer som viser ett bestemt prosjekt

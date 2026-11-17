@@ -49,7 +49,7 @@
   margin: 0 0 12px;
   padding: 10px 12px;
   border-radius: 10px;
-  background: #f8e9ec;
+  background: var(--feil-bakgrunn);
   color: var(--fare);
   font-size: 0.95rem;
 }

@@ -6,6 +6,7 @@
 // =========================================================
 import { $ } from '../hjelpere.js';
 import { RAD_FELT } from '../konstanter.js';
+import { t } from '../sprak.js';
 
 // Legger til én rad: [felt 1] [felt 2] [×]
 export function leggTilRad(liste, verdier = {}) {
@@ -16,7 +17,7 @@ export function leggTilRad(liste, verdier = {}) {
     const felt = document.createElement('input');
     felt.type = 'text';
     felt.dataset.nokkel = nokkel;
-    felt.placeholder = hjelpetekst;
+    felt.placeholder = t(hjelpetekst);
     felt.maxLength = 60;
     felt.value = verdier[nokkel] || '';
     rad.append(felt);
@@ -26,7 +27,7 @@ export function leggTilRad(liste, verdier = {}) {
   fjern.type = 'button'; // så knappen ikke sender skjemaet
   fjern.className = 'fjern-rad';
   fjern.textContent = '×';
-  fjern.setAttribute('aria-label', 'Remove');
+  fjern.setAttribute('aria-label', t('Remove'));
   fjern.addEventListener('click', () => rad.remove());
   rad.append(fjern);
 

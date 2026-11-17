@@ -9,10 +9,10 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
-  signOut,
 } from '../data/firebase.js';
 import { skjulAlleSkjermer } from '../ui/navigasjon.js';
-import { bekreft, visMelding } from '../ui/dialog.js';
+import { visMelding } from '../ui/dialog.js';
+import { t } from '../sprak.js';
 
 const skjerm = $('logginn-skjerm');
 const skjema = $('logginn-skjema');
@@ -36,7 +36,7 @@ export function visOppsettMelding() {
 }
 
 // Gjør Firebase sine feilkoder om til forståelig tekst
-function feilTekst(feil) {
+export function feilTekst(feil) {
   const tekster = {
     'auth/invalid-email': 'That email address does not look right.',
     'auth/invalid-credential': 'Wrong email or password.',
@@ -47,8 +47,10 @@ function feilTekst(feil) {
     'auth/email-already-in-use': 'There is already an account with this email. Try logging in.',
     'auth/network-request-failed': 'No internet connection. Try again when you are online.',
     'auth/too-many-requests': 'Too many attempts. Wait a little and try again.',
+    'auth/requires-recent-login': 'For your safety, log out and in again, then try once more.',
   };
-  return tekster[feil.code] || `Something went wrong (${feil.code || feil.message}).`;
+  if (tekster[feil.code]) return t(tekster[feil.code]);
+  return t('Something went wrong ({kode}).', { kode: feil.code || feil.message });
 }
 
 function visFeil(feil) {
@@ -91,18 +93,13 @@ $('lag-konto-knapp').addEventListener('click', () => {
 $('glemt-knapp').addEventListener('click', () => {
   const epost = epostFelt.value.trim();
   if (!epost) {
-    feilmelding.textContent = 'Write your email address first, then tap "Forgot password?" again.';
+    feilmelding.textContent = t('Write your email address first, then tap "Forgot password?" again.');
     feilmelding.hidden = false;
     return;
   }
   medVenting(async () => {
     await sendPasswordResetEmail(auth, epost);
-    await visMelding(`We sent an email to ${epost} with a link to choose a new password.`);
+    await visMelding(t('We sent an email to {epost} with a link to choose a new password.', { epost }));
   });
 });
 
-// "Log out" (nederst på forsiden)
-$('logg-ut-knapp').addEventListener('click', async () => {
-  if (!(await bekreft('Log out? Your projects are safe and will be here when you log in again.', 'Log out'))) return;
-  await signOut(auth);
-});

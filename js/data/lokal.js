@@ -54,6 +54,7 @@ async function brukLager(lagerNavn, modus, operasjon) {
 export const lesLokal = (lager, id) => brukLager(lager, 'readonly', (l) => l.get(id));
 export const skrivLokal = (lager, id, verdi) => brukLager(lager, 'readwrite', (l) => l.put(verdi, id));
 export const slettLokal = (lager, id) => brukLager(lager, 'readwrite', (l) => l.delete(id));
+export const tomLokal = (lager) => brukLager(lager, 'readwrite', (l) => l.clear());
 
 // Prosjektene fra den gamle versjonen av appen (lå i localStorage)
 export function hentGamleProsjekter() {

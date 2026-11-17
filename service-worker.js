@@ -5,14 +5,14 @@
 //
 // Appens egne filer: vi prøver nettet først (så du alltid får nyeste
 // versjon), og bruker den lagrede kopien hvis det ikke er nett.
-// Firebase-filene (fra gstatic.com) endres aldri for en gitt versjon,
-// så de hentes fra den lagrede kopien først.
+// Firebase-filene (fra gstatic.com) og PDF-visningen pdf.js (fra jsdelivr)
+// endres aldri for en gitt versjon, så de hentes fra den lagrede kopien først.
 //
 // Prosjektene dine lagres IKKE her – det gjør Firebase selv.
 // =========================================================
 
 // Øk dette tallet hvis du legger til eller fjerner filer i listen under.
-const CACHE_NAVN = 'strikkeapp-v15';
+const CACHE_NAVN = 'strikkeapp-v19';
 
 // Filene appen trenger for å starte uten nett
 const FILER = [
@@ -31,6 +31,9 @@ const FILER = [
   './js/konstanter.js',
   './js/hjelpere.js',
   './js/tilstand.js',
+  './js/innstillinger.js',
+  './js/sprak.js',
+  './js/oversettelser.js',
   './js/data/firebase-config.js',
   './js/data/firebase.js',
   './js/data/lokal.js',
@@ -43,6 +46,8 @@ const FILER = [
   './js/ui/navnefelt.js',
   './js/ui/bilder.js',
   './js/ui/prosjektrad.js',
+  './js/ui/pdf-visning.js',
+  './js/ui/paminnelser.js',
   './js/skjermer/hjem.js',
   './js/skjermer/prosjekter.js',
   './js/skjermer/nytt.js',
@@ -51,6 +56,8 @@ const FILER = [
   './js/skjermer/detaljer.js',
   './js/skjermer/monster.js',
   './js/skjermer/logg-inn.js',
+  './js/skjermer/innstillinger.js',
+  './js/skjermer/konto.js',
 ];
 
 // Hvor lenge vi venter på nettet før vi bruker den lagrede kopien
@@ -80,7 +87,10 @@ self.addEventListener('fetch', (hendelse) => {
 
   if (url.origin === self.location.origin) {
     hendelse.respondWith(nettForst(foresporsel));
-  } else if (url.hostname === 'www.gstatic.com' && url.pathname.startsWith('/firebasejs/')) {
+  } else if (
+    (url.hostname === 'www.gstatic.com' && url.pathname.startsWith('/firebasejs/')) ||
+    (url.hostname === 'cdn.jsdelivr.net' && url.pathname.startsWith('/npm/pdfjs-dist@'))
+  ) {
     hendelse.respondWith(lagretForst(foresporsel));
   }
   // Alt annet (f.eks. Firebase sin database) går rett til nettet
